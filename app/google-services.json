@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "248950347071",
+    "project_id": "qrinventoryappnckh",
+    "storage_bucket": "qrinventoryappnckh.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:248950347071:android:b670ba2af33907f201ef8a",
+        "android_client_info": {
+          "package_name": "pao.appnckh.qr_inventory_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwb6tXLV2bMhSi-rXIs13y05qx7qUTQek"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

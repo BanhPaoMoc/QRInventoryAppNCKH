@@ -1,0 +1,24 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme -->
+    <style name="Base.Theme.QR_Inventory_App" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Màu chính -->
+        <item name="colorPrimary">@color/orange</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Màu nền -->
+        <item name="android:colorBackground">@color/blackslate</item>
+        <item name="android:statusBarColor">@color/blackslate</item>
+
+        <!-- Màu text -->
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColorSecondary">@color/gray</item>
+
+        <!-- Kích thước chữ mặc định để không bị nhỏ -->
+        <item name="android:textSize">16sp</item>
+
+        <!-- Style cho Button -->
+        <item name="android:buttonStyle">@style/PrimaryButton</item>
+    </style>
+
+    <style name="Theme.QR_Inventory_App" parent="Base.Theme.QR_Inventory_App" />
+</resources>

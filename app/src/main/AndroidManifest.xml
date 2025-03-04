@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/app_logo"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/app_logo"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.QR_Inventory_App"
+        tools:targetApi="31">
+
+        <!-- SplashscreenActivity là màn hình khởi động đầu tiên -->
+        <activity
+            android:name=".SplashscreenActivity"
+            android:theme="@style/Theme.QR_Inventory_App"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+
+        <!-- WelcomeActivity là màn hình tiếp theo sau Splashscreen -->
+        <activity
+            android:name=".WelcomeActivity"
+            android:exported="false" />
+
+        <!-- LoginActivity để đăng nhập -->
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+        <!-- RegisterActivity để đăng ký -->
+        <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+
+        <!-- ForgotPasswordActivity (nếu có chức năng quên mật khẩu) -->
+        <activity
+            android:name=".ForgotPasswordActivity"
+            android:exported="false" />
+
+        <!-- MainActivity: chỉ mở sau khi người dùng đăng nhập hoặc đăng ký -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+
+    </application>
+</manifest>
