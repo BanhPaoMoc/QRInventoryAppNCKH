@@ -1,7 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme -->
     <style name="Base.Theme.QR_Inventory_App" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Màu chính -->
         <item name="colorPrimary">@color/orange</item>
         <item name="colorOnPrimary">@color/white</item>
 
@@ -13,12 +12,21 @@
         <item name="android:textColorPrimary">@color/white</item>
         <item name="android:textColorSecondary">@color/gray</item>
 
-        <!-- Kích thước chữ mặc định để không bị nhỏ -->
+        <!-- Kích thước chữ mặc định -->
         <item name="android:textSize">16sp</item>
-
-        <!-- Style cho Button -->
-        <item name="android:buttonStyle">@style/PrimaryButton</item>
     </style>
 
     <style name="Theme.QR_Inventory_App" parent="Base.Theme.QR_Inventory_App" />
+
+    <!-- Style cho nút trắng, viền xám, chữ đen -->
+    <style name="OutlinedButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:background">@drawable/outline_button</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <!-- Style cho nút cam, không viền, chữ trắng -->
+    <style name="FilledButton" parent="Widget.Material3.Button">
+        <item name="android:background">@drawable/custom_button</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
 </resources>

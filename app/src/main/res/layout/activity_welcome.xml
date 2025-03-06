@@ -36,16 +36,16 @@
         android:layout_marginBottom="16dp"/>
 
     <Button
+        style="@style/OutlinedButton"
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Đăng Ký"
-        android:background="@drawable/outline_button"
-        android:textColor="@color/black"
-        android:textSize="16sp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
+        android:layout_marginBottom="10dp"
         android:padding="10dp"
-        android:layout_marginBottom="10dp"/>
+        android:text="Đăng Ký"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
 </LinearLayout>
 
