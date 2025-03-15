@@ -12,31 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+
+
+
+
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomApp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:layout_gravity="bottom"
         android:backgroundTint="#363738"
-        app:fabCradleMargin="8dp"
+        app:fabCradleMargin="0dp"
         app:fabCradleRoundedCornerRadius="40dp"
         app:hideOnScroll="false">
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="15dp"
-            app:elevation="0dp"
-            android:background="@android:color/transparent"
-            app:itemIconTint="@color/custom_color_bottom_navigation"
-            app:itemPaddingBottom="20dp"
-            app:itemTextAppearanceActive="@style/BottomNavigationView"
-            app:itemTextAppearanceInactive="@style/BottomNavigationView"
-            app:itemTextColor="@color/custom_color_bottom_navigation"
-            app:labelVisibilityMode="labeled"
-            app:menu="@menu/bottom_menu" />
 
     </com.google.android.material.bottomappbar.BottomAppBar>
 
@@ -53,4 +41,19 @@
         app:layout_anchor="@id/bottomApp"
         app:maxImageSize="30dp" />
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        app:itemIconTint="@color/custom_color_bottom_navigation"
+        app:itemPaddingBottom="20dp"
+        app:itemTextAppearanceActive="@style/BottomNavigationView"
+        app:itemTextAppearanceInactive="@style/BottomNavigationView"
+        app:itemTextColor="@color/custom_color_bottom_navigation"
+        app:labelVisibilityMode="labeled"
+        app:layout_anchor="@+id/bottomApp"
+        app:layout_anchorGravity="center"
+        app:menu="@menu/bottom_menu" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
