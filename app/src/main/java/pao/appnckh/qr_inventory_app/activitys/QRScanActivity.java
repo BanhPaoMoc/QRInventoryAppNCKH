@@ -1,4 +1,4 @@
-package pao.appnckh.qr_inventory_app;
+package pao.appnckh.qr_inventory_app.activitys;
 
 import android.os.Bundle;
 
@@ -8,13 +8,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class ForgotPasswordActivity extends AppCompatActivity {
+import pao.appnckh.qr_inventory_app.R;
+
+public class QRScanActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_forgot_password);
+        setContentView(R.layout.activity_qrscan);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

@@ -15,6 +15,7 @@
         <!-- Back Button -->
 
         <!-- Title -->
+
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="40dp"
@@ -40,7 +41,7 @@
             android:id="@+id/etUsername"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Tên người dùng"
+            android:hint="Tên Người Dùng"
             android:textColorHint="@color/gray"
             android:textColor="@color/black"
             android:background="@drawable/edt"

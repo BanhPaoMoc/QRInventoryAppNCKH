@@ -2,6 +2,15 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,43 +21,34 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QR_Inventory_App"
         tools:targetApi="31">
-
         <!-- SplashscreenActivity là màn hình khởi động đầu tiên -->
         <activity
-            android:name=".SplashscreenActivity"
-            android:theme="@style/Theme.QR_Inventory_App"
+            android:name=".activitys.SplashscreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-
-        <!-- WelcomeActivity là màn hình tiếp theo sau Splashscreen -->
+        </activity> <!-- WelcomeActivity là màn hình tiếp theo sau Splashscreen -->
         <activity
-            android:name=".WelcomeActivity"
-            android:exported="false" />
-
-        <!-- LoginActivity để đăng nhập -->
+            android:name=".activitys.WelcomeActivity"
+            android:exported="false" /> <!-- LoginActivity để đăng nhập -->
         <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
-
-        <!-- RegisterActivity để đăng ký -->
+            android:name=".activitys.LoginActivity"
+            android:exported="false" /> <!-- RegisterActivity để đăng ký -->
         <activity
-            android:name=".RegisterActivity"
-            android:exported="false" />
-
-        <!-- ForgotPasswordActivity (nếu có chức năng quên mật khẩu) -->
+            android:name=".activitys.RegisterActivity"
+            android:exported="false" /> <!-- ForgotPasswordActivity (nếu có chức năng quên mật khẩu) -->
         <activity
-            android:name=".ForgotPasswordActivity"
-            android:exported="false" />
-
-        <!-- MainActivity: chỉ mở sau khi người dùng đăng nhập hoặc đăng ký -->
+            android:name=".activitys.ForgotPasswordActivity"
+            android:exported="false" /> <!-- MainActivity: chỉ mở sau khi người dùng đăng nhập hoặc đăng ký -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activitys.MainActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".activitys.QRScanActivity"
+            android:exported="false" />
     </application>
+
 </manifest>

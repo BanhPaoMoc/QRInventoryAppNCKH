@@ -1,21 +1,21 @@
-package pao.appnckh.qr_inventory_app;
+package pao.appnckh.qr_inventory_app.activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+
+import pao.appnckh.qr_inventory_app.R;
 
 public class RegisterActivity extends AppCompatActivity {
 

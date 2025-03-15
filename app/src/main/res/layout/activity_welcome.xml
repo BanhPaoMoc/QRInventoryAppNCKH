@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:gravity="center"
     android:background="@drawable/warehouse_bg"
-    tools:context=".WelcomeActivity">
+    tools:context=".activitys.WelcomeActivity">
     <!-- Nút Đăng Nhập / Đăng Ký -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -36,7 +36,6 @@
         android:layout_marginBottom="16dp"/>
 
     <Button
-        style="@style/OutlinedButton"
         android:id="@+id/btnRegister"
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -45,6 +44,7 @@
         android:layout_marginBottom="10dp"
         android:padding="10dp"
         android:text="Đăng Ký"
+        android:background="@drawable/outline_button"
         android:textColor="@color/black"
         android:textSize="16sp" />
 </LinearLayout>

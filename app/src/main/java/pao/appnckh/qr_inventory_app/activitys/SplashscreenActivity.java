@@ -1,10 +1,12 @@
-package pao.appnckh.qr_inventory_app;
+package pao.appnckh.qr_inventory_app.activitys;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
+
+import pao.appnckh.qr_inventory_app.R;
 
 public class SplashscreenActivity extends AppCompatActivity {
     private static final int SPLASH_DELAY = 3000; // 3 giây
