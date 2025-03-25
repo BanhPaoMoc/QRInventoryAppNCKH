@@ -2,6 +2,7 @@
   "project_info": {
     "project_number": "248950347071",
     "project_id": "qrinventoryappnckh",
+    "firebase_url": "https://qrinventoryappnckh-default-rtdb.asia-southeast1.firebasedatabase.app",
     "storage_bucket": "qrinventoryappnckh.firebasestorage.app"
   },
   "client": [
@@ -12,7 +13,20 @@
           "package_name": "pao.appnckh.qr_inventory_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "248950347071-ullqq8g6r9plindtl8n7jvai9rhfpcoa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pao.appnckh.qr_inventory_app",
+            "certificate_hash": "133fc83c2373674aa5eefff236ce84bff8f4458d"
+          }
+        },
+        {
+          "client_id": "248950347071-s7lm63ns888d3cvruqv41cqtmjducno1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBwb6tXLV2bMhSi-rXIs13y05qx7qUTQek"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "248950347071-8hqjvm7bm8las70sdvmaov8obfou72im.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

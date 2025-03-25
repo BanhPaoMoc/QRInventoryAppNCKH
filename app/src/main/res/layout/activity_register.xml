@@ -13,19 +13,17 @@
         android:gravity="center">
 
         <!-- Back Button -->
-
-        <!-- Title -->
-
         <ImageView
             android:id="@+id/btnBack"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:src="@drawable/ic_back"
             android:layout_gravity="start"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="60dp"
             android:contentDescription="Back"
-            android:src="@drawable/ic_back" />
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="80dp"/>
 
+        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,6 +35,19 @@
             android:layout_marginBottom="20dp"/>
 
         <!-- Input Fields -->
+        <!-- Full Name -->
+        <EditText
+            android:id="@+id/etFullName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Họ và tên"
+            android:textColorHint="@color/gray"
+            android:textColor="@color/black"
+            android:background="@drawable/edt"
+            android:padding="12dp"
+            android:layout_marginTop="12dp"/>
+
+        <!-- Username -->
         <EditText
             android:id="@+id/etUsername"
             android:layout_width="match_parent"
@@ -48,6 +59,7 @@
             android:padding="12dp"
             android:layout_marginTop="12dp"/>
 
+        <!-- Email -->
         <EditText
             android:id="@+id/etEmail"
             android:layout_width="match_parent"
@@ -60,6 +72,7 @@
             android:padding="12dp"
             android:layout_marginTop="12dp"/>
 
+        <!-- Password -->
         <EditText
             android:id="@+id/etPassword"
             android:layout_width="match_parent"
@@ -72,6 +85,7 @@
             android:padding="12dp"
             android:layout_marginTop="12dp"/>
 
+        <!-- Confirm Password -->
         <EditText
             android:id="@+id/etConfirmPassword"
             android:layout_width="match_parent"
@@ -122,13 +136,13 @@
             android:orientation="horizontal"
             android:layout_marginTop="10dp"
             android:gravity="center">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Đã có tài khoản? "
                 android:textColor="@color/dark_gray"
-                android:textSize="14sp"
-                />
+                android:textSize="14sp"/>
 
             <TextView
                 android:id="@+id/tvlogin"

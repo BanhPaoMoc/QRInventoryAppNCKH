@@ -116,22 +116,23 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
-    // Nhận kết quả sau khi đăng nhập Google
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
+        Log.d("LoginActivity", "onActivityResult called");
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
+                Log.d("Google Sign-In", "ID Token: " + account.getIdToken());
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
-                Log.w("Google Sign-In", "Google sign in failed", e);
-                Toast.makeText(this, "Google Sign-In thất bại", Toast.LENGTH_SHORT).show();
+                Log.e("Google Sign-In", "Error: " + e.getStatusCode());
+                Toast.makeText(this, "Google Sign-In thất bại: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         }
     }
+
 
     // Xác thực tài khoản Google với Firebase
     private void firebaseAuthWithGoogle(String idToken) {
@@ -140,10 +141,12 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
+                        Log.d("Google Sign-In", "Firebase Auth successful");
                         Toast.makeText(LoginActivity.this, "Đăng nhập Google thành công!", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                         finish();
                     } else {
+                        Log.e("Google Sign-In", "Firebase Auth failed", task.getException());
                         Toast.makeText(LoginActivity.this, "Xác thực Google thất bại", Toast.LENGTH_SHORT).show();
                     }
                 });
