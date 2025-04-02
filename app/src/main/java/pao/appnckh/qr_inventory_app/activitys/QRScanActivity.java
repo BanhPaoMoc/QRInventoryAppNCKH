@@ -1,149 +1,223 @@
 package pao.appnckh.qr_inventory_app.activitys;
 
-import android.content.DialogInterface;
-import android.media.Image;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.SurfaceView;
-import android.view.View;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.camera.core.ImageCapture;
-import androidx.camera.core.ImageCaptureException;
+import androidx.camera.core.CameraSelector;
+import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
+import androidx.camera.core.Preview;
+import androidx.camera.lifecycle.ProcessCameraProvider;
+import androidx.camera.view.PreviewView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.mlkit.vision.barcode.common.Barcode;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.common.util.concurrent.ListenableFuture;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
+import com.google.mlkit.vision.barcode.common.Barcode;
 import com.google.mlkit.vision.common.InputImage;
-import java.util.HashMap;
-import java.util.Map;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import pao.appnckh.qr_inventory_app.R;
 
+@androidx.camera.core.ExperimentalGetImage
 public class QRScanActivity extends AppCompatActivity {
-    private SurfaceView surfaceView;
-    private BarcodeScanner barcodeScanner;
-    private DatabaseReference userStoresReference;
-    private String userId, storeId;
+    private static final String TAG = "ScanActivity";
+    private static final int PERMISSION_REQUEST_CAMERA = 1001;
+
+    private PreviewView previewView;
+    private TextView scanResultText;
+    private TextView barcodeTypeText;
+    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
+    private ExecutorService cameraExecutor;
+    private BarcodeScanner scanner;
+    private boolean autoFinishOnScan = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_qrscan);
 
-        surfaceView = findViewById(R.id.surfaceView);
-        barcodeScanner = BarcodeScanning.getClient();
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        storeId = "defaultStore"; // Có thể lấy từ Intent hoặc SharedPreferences
-        userStoresReference = FirebaseDatabase.getInstance().getReference("Users").child(userId).child("Stores").child(storeId).child("Items");
+        previewView = findViewById(R.id.previewView);
+        scanResultText = findViewById(R.id.scanResultText);
+        barcodeTypeText = findViewById(R.id.barcodeTypeText);
 
-        startScanner();
+        // Kiểm tra xem Activity được mở với cờ không tự động đóng
+        if (getIntent().hasExtra("AUTO_FINISH")) {
+            autoFinishOnScan = getIntent().getBooleanExtra("AUTO_FINISH", true);
+        }
+
+        // Yêu cầu quyền truy cập camera
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.CAMERA}, PERMISSION_REQUEST_CAMERA);
+        } else {
+            setupCamera();
+        }
+
+        // Khởi tạo barcode scanner với nhiều định dạng
+        BarcodeScannerOptions options = new BarcodeScannerOptions.Builder()
+                .setBarcodeFormats(
+                        Barcode.FORMAT_QR_CODE,
+                        Barcode.FORMAT_CODE_128,
+                        Barcode.FORMAT_CODE_39,
+                        Barcode.FORMAT_EAN_13,
+                        Barcode.FORMAT_EAN_8,
+                        Barcode.FORMAT_UPC_A,
+                        Barcode.FORMAT_UPC_E,
+                        Barcode.FORMAT_CODABAR,
+                        Barcode.FORMAT_ITF,
+                        Barcode.FORMAT_PDF417,
+                        Barcode.FORMAT_AZTEC
+                )
+                .build();
+        scanner = BarcodeScanning.getClient(options);
+
+        cameraExecutor = Executors.newSingleThreadExecutor();
     }
 
-    private void startScanner() {
-        surfaceView.setOnClickListener(v -> scanBarcode());
+    private void setupCamera() {
+        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        cameraProviderFuture.addListener(() -> {
+            try {
+                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                bindCameraUseCases(cameraProvider);
+            } catch (ExecutionException | InterruptedException e) {
+                Log.e(TAG, "Error setting up camera: " + e.getMessage());
+            }
+        }, ContextCompat.getMainExecutor(this));
     }
 
-    private void scanBarcode() {
-        ImageCapture imageCapture = new ImageCapture.Builder().build();
+    private void bindCameraUseCases(ProcessCameraProvider cameraProvider) {
+        // Preview use case
+        Preview preview = new Preview.Builder().build();
+        preview.setSurfaceProvider(previewView.getSurfaceProvider());
 
-        imageCapture.takePicture(ContextCompat.getMainExecutor(this), new ImageCapture.OnImageCapturedCallback() {
-            @Override
-            public void onCaptureSuccess(@NonNull ImageProxy imageProxy) {
-                @SuppressWarnings("UnsafeOptInUsageError")
-                Image mediaImage = imageProxy.getImage();
-                if (mediaImage != null) {
-                    InputImage image = InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-                    processImage(image);
-                }
+        // Image analysis use case
+        ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build();
+
+        imageAnalysis.setAnalyzer(cameraExecutor, new BarcodeAnalyzer());
+
+        // Camera selector
+        CameraSelector cameraSelector = new CameraSelector.Builder()
+                .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                .build();
+
+        // Unbind trước khi gắn lại
+        cameraProvider.unbindAll();
+
+        // Bind camera provider với các use case
+        cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                setupCamera();
+            } else {
+                Toast.makeText(this, "Cần quyền truy cập camera để quét mã",
+                        Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+
+    private class BarcodeAnalyzer implements ImageAnalysis.Analyzer {
+        @Override
+        public void analyze(@NonNull ImageProxy imageProxy) {
+            if (imageProxy.getImage() == null) {
                 imageProxy.close();
+                return;
             }
 
-            @Override
-            public void onError(@NonNull ImageCaptureException exception) {
-                Log.e("QRScanner", "Lỗi chụp ảnh", exception);
+            // Lấy media image
+            InputImage image = InputImage.fromMediaImage(
+                    imageProxy.getImage(),
+                    imageProxy.getImageInfo().getRotationDegrees()
+            );
+
+            // Process image
+            scanner.process(image)
+                    .addOnSuccessListener(barcodes -> {
+                        if (barcodes.size() > 0) {
+                            Barcode barcode = barcodes.get(0);
+                            String barcodeValue = barcode.getRawValue();
+                            if (barcodeValue != null) {
+                                // Xác định loại mã vạch
+                                String barcodeType = getBarcodeTypeName(barcode.getFormat());
+
+                                // Xử lý kết quả quét được
+                                handleScanResult(barcodeValue, barcodeType);
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> Log.e(TAG, "Barcode scanning failed: " + e.getMessage()))
+                    .addOnCompleteListener(task -> imageProxy.close());
+        }
+    }
+
+    private String getBarcodeTypeName(int format) {
+        switch (format) {
+            case Barcode.FORMAT_QR_CODE: return "QR Code";
+            case Barcode.FORMAT_CODE_128: return "Code 128";
+            case Barcode.FORMAT_CODE_39: return "Code 39";
+            case Barcode.FORMAT_EAN_13: return "EAN-13";
+            case Barcode.FORMAT_EAN_8: return "EAN-8";
+            case Barcode.FORMAT_UPC_A: return "UPC-A";
+            case Barcode.FORMAT_UPC_E: return "UPC-E";
+            case Barcode.FORMAT_CODABAR: return "Codabar";
+            case Barcode.FORMAT_ITF: return "ITF";
+            case Barcode.FORMAT_PDF417: return "PDF417";
+            case Barcode.FORMAT_AZTEC: return "Aztec";
+            default: return "Unknown";
+        }
+    }
+
+    private void handleScanResult(String value, String type) {
+        // Chạy trên main thread
+        runOnUiThread(() -> {
+            // Hiển thị giá trị đã quét và loại mã vạch
+            scanResultText.setText(value);
+            barcodeTypeText.setText(type);
+            scanResultText.setVisibility(View.VISIBLE);
+            barcodeTypeText.setVisibility(View.VISIBLE);
+
+            // Trả kết quả về activity gọi
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("SCAN_RESULT", value);
+            resultIntent.putExtra("BARCODE_TYPE", type);
+            setResult(RESULT_OK, resultIntent);
+
+            // Nếu đã cấu hình tự động đóng sau khi quét
+            if (autoFinishOnScan) {
+                // Đợi một chút để người dùng thấy kết quả rồi đóng
+                scanResultText.postDelayed(() -> finish(), 1500);
             }
         });
     }
 
-    private void processImage(InputImage image) {
-        barcodeScanner.process(image)
-                .addOnSuccessListener(barcodes -> {
-                    for (Barcode barcode : barcodes) {
-                        String scannedUid = barcode.getRawValue();
-                        checkItemInDatabase(scannedUid);
-                    }
-                })
-                .addOnFailureListener(e -> Log.e("QRScanner", "Lỗi khi quét mã", e));
-    }
-
-
-    private void checkItemInDatabase(String itemUid) {
-        userStoresReference.child(itemUid).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    showInventoryDialog(snapshot);
-                } else {
-                    showAddItemDialog(itemUid);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase", "Lỗi truy vấn: " + error.getMessage());
-            }
-        });
-    }
-
-    private void showAddItemDialog(String itemUid) {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_item, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(dialogView)
-                .setTitle("Thêm sản phẩm mới")
-                .setPositiveButton("Thêm", (dialog, which) -> {
-                    Map<String, Object> newItem = new HashMap<>();
-                    newItem.put("uid", itemUid);
-                    newItem.put("name", "Tên mặc định"); // Lấy từ EditText
-                    newItem.put("price", 0);
-                    newItem.put("category", "");
-                    newItem.put("quantity", 0);
-                    newItem.put("description", "");
-                    newItem.put("dateAdded", System.currentTimeMillis());
-
-                    userStoresReference.child(itemUid).setValue(newItem)
-                            .addOnSuccessListener(unused -> Toast.makeText(QRScanActivity.this, "Đã thêm thành công", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Log.e("Firebase", "Lỗi thêm sản phẩm", e));
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
-    }
-
-    private void showInventoryDialog(DataSnapshot snapshot) {
-        View dialogView = getLayoutInflater().inflate(R.layout.dialog_inventory, null);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setView(dialogView)
-                .setTitle("Cập nhật kho hàng")
-                .setPositiveButton("Lưu", (dialog, which) -> {
-                    Map<String, Object> updateData = new HashMap<>();
-                    updateData.put("lastUpdated", System.currentTimeMillis());
-                    updateData.put("quantity", 10); // Thêm hoặc trừ số lượng
-
-                    snapshot.getRef().updateChildren(updateData)
-                            .addOnSuccessListener(unused -> Toast.makeText(QRScanActivity.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Log.e("Firebase", "Lỗi cập nhật kho hàng", e));
-                })
-                .setNegativeButton("Hủy", null)
-                .show();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cameraExecutor.shutdown();
     }
 }
