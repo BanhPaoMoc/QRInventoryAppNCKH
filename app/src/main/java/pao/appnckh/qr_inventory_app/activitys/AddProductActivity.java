@@ -7,14 +7,11 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.database.FirebaseDatabase;
 
 import pao.appnckh.qr_inventory_app.R;
-import pao.appnckh.qr_inventory_app.model.Product;
+import pao.appnckh.qr_inventory_app.models.Product;
 
 public class AddProductActivity extends AppCompatActivity {
 

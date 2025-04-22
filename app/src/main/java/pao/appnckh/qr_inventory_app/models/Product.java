@@ -1,4 +1,4 @@
-package pao.appnckh.qr_inventory_app.model;
+package pao.appnckh.qr_inventory_app.models;
 
 public class Product {
     public String code;
