@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.mlkit.vision.barcode.BarcodeScanner;
 import com.google.mlkit.vision.barcode.BarcodeScannerOptions;
 import com.google.mlkit.vision.barcode.BarcodeScanning;
@@ -192,32 +194,87 @@ public class QRScanActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isProcessingScan = false; // Thêm một flag để theo dõi việc quét
+
     private void handleScanResult(String value, String type) {
-        // Chạy trên main thread
+        // Kiểm tra nếu đang trong quá trình xử lý scan
+        if (isProcessingScan) {
+            return; // Nếu đang xử lý, không làm gì cả
+        }
+
+        // Đánh dấu bắt đầu xử lý scan
+        isProcessingScan = true;
+
         runOnUiThread(() -> {
-            // Hiển thị giá trị đã quét và loại mã vạch
+            // Hiển thị giá trị mã quét và loại barcode
             scanResultText.setText(value);
             barcodeTypeText.setText(type);
             scanResultText.setVisibility(View.VISIBLE);
             barcodeTypeText.setVisibility(View.VISIBLE);
 
-            // Trả kết quả về activity gọi
+            // Trả kết quả về Activity gọi
             Intent resultIntent = new Intent();
             resultIntent.putExtra("SCAN_RESULT", value);
             resultIntent.putExtra("BARCODE_TYPE", type);
             setResult(RESULT_OK, resultIntent);
 
-            // Nếu đã cấu hình tự động đóng sau khi quét
-            if (autoFinishOnScan) {
-                // Đợi một chút để người dùng thấy kết quả rồi đóng
-                scanResultText.postDelayed(() -> finish(), 1500);
+            // Kiểm tra sản phẩm trong database
+            checkProductInDatabase(value, autoFinishOnScan);
+        });
+    }
+
+    private void checkProductInDatabase(String barcodeValue, boolean autoFinish) {
+        checkIfProductExists(barcodeValue, new ProductExistCallback() {
+            @Override
+            public void onCheck(boolean exists) {
+
+                if (!isProcessingScan) {
+                    return;
+                }
+                Intent intent;
+                if (exists) {
+                    // Nếu sản phẩm tồn tại, chuyển đến màn hình chi tiết sản phẩm
+                    intent = new Intent(QRScanActivity.this, ProductDetailActivity.class);
+                    intent.putExtra("PRODUCT_CODE", barcodeValue);
+                } else {
+                    // Nếu chưa có, chuyển đến màn hình thêm sản phẩm
+                    intent = new Intent(QRScanActivity.this, AddProductActivity.class);
+                    intent.putExtra("NEW_PRODUCT_CODE", barcodeValue);
+                }
+                startActivity(intent);
+
+                // Đóng sau một chút nếu cấu hình auto finish, để người dùng kịp xem
+                if (autoFinish) {
+                    scanResultText.postDelayed(() -> finish(), 2500);
+                }
+
             }
         });
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        cameraExecutor.shutdown();
+    private String sanitizeProductId(String productId) {
+        // Thay thế các ký tự không hợp lệ
+        return productId.replaceAll("[.#$\\[\\]]", "_");
     }
+
+    private void checkIfProductExists(String productId, ProductExistCallback callback) {
+        String sanitizedProductId = sanitizeProductId(productId);
+        DatabaseReference productRef = FirebaseDatabase.getInstance()
+                .getReference("Products")
+                .child(sanitizedProductId);
+
+        productRef.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                boolean exists = task.getResult().exists();
+                callback.onCheck(exists);
+            } else {
+                callback.onCheck(false); // Lỗi thì xử lý như không tồn tại
+            }
+        });
+    }
+
+    public interface ProductExistCallback {
+        void onCheck(boolean exists);
+    }
+
 }

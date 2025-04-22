@@ -1,8 +1,8 @@
 {
   "project_info": {
     "project_number": "248950347071",
-    "project_id": "qrinventoryappnckh",
     "firebase_url": "https://qrinventoryappnckh-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "qrinventoryappnckh",
     "storage_bucket": "qrinventoryappnckh.firebasestorage.app"
   },
   "client": [

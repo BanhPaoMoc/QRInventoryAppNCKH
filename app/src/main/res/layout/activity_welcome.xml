@@ -22,30 +22,59 @@
         android:contentDescription="App Logo"
         android:src="@drawable/app_logo_3x" />
 
-    <Button
-        android:id="@+id/btnLogin"
+
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Đăng Nhập"
-        android:background="@drawable/custom_button"
-        android:textColor="@color/white"
-        android:textSize="16sp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:padding="10dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="LOG IN"
+            android:background="@drawable/custom_button"
+            android:textColor="@android:color/white"
+            android:textStyle="bold"
+
+        android:drawablePadding="8dp"
+        android:gravity="center_vertical|center"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
         android:layout_marginBottom="16dp"/>
 
-    <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:padding="10dp"
-        android:text="Đăng Ký"
-        android:background="@drawable/outline_button"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="REGISTER"
+            android:background="@drawable/outline_button"
+            android:textColor="#2196F3"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/btnGoogleLoginWelcome"
+            android:layout_width="105dp"
+            android:layout_height="56dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/edt"
+            android:paddingTop="9dp"
+            android:paddingBottom="8dp"
+            android:src="@drawable/gg_ic" />
+    </LinearLayout>
 </LinearLayout>
 

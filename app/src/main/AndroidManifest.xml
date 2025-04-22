@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
@@ -21,7 +20,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.QR_Inventory_App"
         tools:targetApi="31">
-        <!-- SplashscreenActivity là màn hình khởi động đầu tiên -->
+        <activity
+            android:name=".activitys.AddProductActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activitys.ProductDetailActivity"
+            android:exported="false" /> <!-- SplashscreenActivity là màn hình khởi động đầu tiên -->
         <activity
             android:name=".activitys.SplashscreenActivity"
             android:exported="true">

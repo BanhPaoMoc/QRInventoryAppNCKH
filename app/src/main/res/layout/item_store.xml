@@ -17,15 +17,25 @@
             android:id="@+id/tvStoreName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Tên kho"
-            android:textSize="18sp"
-            android:textColor="@android:color/black"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true" />
+            android:text="Tên kho"
+            android:textColor="@android:color/black"
+            android:textSize="18sp" />
 
         <!-- Nút xóa -->
 
         <!-- Nút đổi tên -->
+
+        <TextView
+            android:id="@+id/tvItemCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvStoreName"
+            android:layout_alignParentStart="true"
+
+            android:text="Số lượng: 5"
+            android:textSize="14sp" />
+
         <ImageButton
             android:id="@+id/btnDelete"
             android:layout_width="40dp"
