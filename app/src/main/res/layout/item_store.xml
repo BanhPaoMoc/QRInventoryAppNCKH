@@ -27,7 +27,7 @@
         <!-- Nút đổi tên -->
 
         <TextView
-            android:id="@+id/tvItemCount"
+            android:id="@+id/totalCountTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvStoreName"

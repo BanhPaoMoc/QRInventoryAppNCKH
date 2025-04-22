@@ -4,9 +4,17 @@ public class Store {
     private String storeId;
     private String storeName;
     private String userId;
+    private int totalCount;
 
     // Constructor mặc định (bắt buộc cho Firebase)
     public Store() {
+    }
+
+    public Store(String storeId, String storeName, String userId, int totalCount) {
+        this.storeId = storeId;
+        this.storeName = storeName;
+        this.userId = userId;
+        this.totalCount = totalCount;
     }
 
     // Constructor với tham số
@@ -14,6 +22,7 @@ public class Store {
         this.storeId = storeId;
         this.storeName = storeName;
         this.userId = userId;
+        
     }
 
     // Getter và Setter
@@ -39,5 +48,16 @@ public class Store {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public int getTotalCount() {
+        return totalCount;
+    }
+    public void setTotalCount(int totalCount) {
+        this.totalCount = totalCount;
+    }
+    @Override
+    public String toString() {
+        return storeName; // để hiển thị trong Spinner
     }
 }

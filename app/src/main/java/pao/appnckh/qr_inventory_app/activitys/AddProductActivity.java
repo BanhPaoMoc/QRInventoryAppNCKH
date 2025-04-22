@@ -1,17 +1,29 @@
 package pao.appnckh.qr_inventory_app.activitys;
 
 import android.os.Bundle;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import pao.appnckh.qr_inventory_app.R;
 import pao.appnckh.qr_inventory_app.models.Product;
+import pao.appnckh.qr_inventory_app.models.Store;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -19,6 +31,8 @@ public class AddProductActivity extends AppCompatActivity {
     private EditText edtProductName;
     private EditText edtProductPrice, edtProductCount;
     private Button btnAddProduct;
+    private Spinner spinnerStores;
+    String userId = FirebaseAuth.getInstance().getUid();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +46,37 @@ public class AddProductActivity extends AppCompatActivity {
         edtProductPrice = findViewById(R.id.edtProductPrice);
         edtProductCount = findViewById(R.id.edtProductCount);
 
+        spinnerStores = findViewById(R.id.spinnerStores);
+        List<Store> storeList = new ArrayList<>();
+
+        ArrayAdapter<Store> storeAdapterNew = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, storeList);
+        storeAdapterNew.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerStores.setAdapter(storeAdapterNew);
+
+
+
+
+
+        DatabaseReference storeRef = FirebaseDatabase.getInstance().getReference("Users").child(userId).child("Stores");
+
+        storeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                storeList.clear();
+                for (DataSnapshot storeSnapshot : snapshot.getChildren()) {
+                    Store store = storeSnapshot.getValue(Store.class);
+                    storeList.add(store);
+                }
+                storeAdapterNew.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(AddProductActivity.this, "Không thể load kho hàng", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
         // Nhận mã sản phẩm đã quét từ intent
         String scannedProductCode = getIntent().getStringExtra("NEW_PRODUCT_CODE");
 
@@ -42,8 +87,6 @@ public class AddProductActivity extends AppCompatActivity {
 
         // Xử lý nút thêm sản phẩm
         btnAddProduct.setOnClickListener(v -> addProductToFirebase());
-
-
     }
 
     private String sanitizeProductId(String productId) {
@@ -80,19 +123,29 @@ public class AddProductActivity extends AppCompatActivity {
             return;
         }
 
+        Store selectedStore = (Store) spinnerStores.getSelectedItem();
+        if (selectedStore == null) {
+            Toast.makeText(this, "Vui lòng chọn kho hàng", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String storeId = selectedStore.getStoreId();
+
         // Tiến hành sanitize mã sản phẩm để đảm bảo đường dẫn Firebase hợp lệ
         String sanitizedCode = sanitizeProductId(code);
 
         // Tạo đối tượng sản phẩm
-        Product product = new Product(sanitizedCode, name, price, count);
+        Product product = new Product(storeId, sanitizedCode, name, price, count);
 
 
-        FirebaseDatabase.getInstance().getReference("Products")
-                .child(sanitizedCode) // key là mã sản phẩm đã được làm sạch
+        FirebaseDatabase.getInstance().getReference("Users")
+                .child(userId)
+                .child("Stores")
+                .child(storeId)
+                .child(sanitizedCode)
                 .setValue(product)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Thêm sản phẩm thành công!", Toast.LENGTH_SHORT).show();
-                    finish(); // Quay lại màn trước
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Lỗi khi thêm sản phẩm", Toast.LENGTH_SHORT).show();

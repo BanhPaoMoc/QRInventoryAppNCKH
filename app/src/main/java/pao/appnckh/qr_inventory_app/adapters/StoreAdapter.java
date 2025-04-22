@@ -1,22 +1,39 @@
 package pao.appnckh.qr_inventory_app.adapters;
 
+import static androidx.camera.core.impl.utils.ContextUtil.getApplicationContext;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.security.AccessController;
+import java.util.ArrayList;
 import java.util.List;
 import pao.appnckh.qr_inventory_app.R;
 import pao.appnckh.qr_inventory_app.models.Store;
 
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHolder> {
 
-    private List<Store> storeList;
+    private Context context;
+    private List<Store> storeList ;
     private OnStoreActionListener onStoreActionListener;
 
-    public StoreAdapter(List<Store> storeList, OnStoreActionListener onStoreActionListener) {
+    public StoreAdapter(Context context, List<Store> storeList, OnStoreActionListener onStoreActionListener) {
+        this.context = context;
         this.storeList = storeList;
         this.onStoreActionListener = onStoreActionListener;
     }
@@ -32,6 +49,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
     public void onBindViewHolder(@NonNull StoreViewHolder holder, int position) {
         Store store = storeList.get(position);
         holder.tvStoreName.setText(store.getStoreName());
+        holder.totalCountTextView.setText("Tổng SL: " + store.getTotalCount());
 
         // Xử lý sự kiện xóa
         holder.btnDelete.setOnClickListener(v -> {
@@ -46,6 +64,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
                 onStoreActionListener.onEditStore(store, position);
             }
         });
+
     }
 
     @Override
@@ -54,7 +73,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
     }
 
     public static class StoreViewHolder extends RecyclerView.ViewHolder {
-        TextView tvStoreName;
+        TextView tvStoreName, totalCountTextView;
         ImageButton btnDelete, btnEdit;
 
         public StoreViewHolder(@NonNull View itemView, OnStoreActionListener onStoreActionListener) {
@@ -62,11 +81,16 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
             tvStoreName = itemView.findViewById(R.id.tvStoreName);
             btnDelete = itemView.findViewById(R.id.btnDelete);
             btnEdit = itemView.findViewById(R.id.btnEdit);
+            totalCountTextView = itemView.findViewById(R.id.totalCountTextView);
+
         }
     }
 
     public interface OnStoreActionListener {
-        void onDeleteStore(Store store, int position);
+        void onStoreClicked(Store store);
         void onEditStore(Store store, int position);
+        void onDeleteStore(Store store, int position);  // Phương thức cần implement
     }
+
+
 }

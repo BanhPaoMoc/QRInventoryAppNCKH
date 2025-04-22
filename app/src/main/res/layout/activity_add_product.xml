@@ -26,6 +26,11 @@
         android:layout_height="wrap_content"
         android:hint="Số lượng sản phẩm"
         android:inputType="numberDecimal" />
+    <Spinner
+        android:id="@+id/spinnerStores"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"/>
 
     <Button
         android:id="@+id/btnAddProduct"
