@@ -3,6 +3,7 @@ package pao.appnckh.qr_inventory_app.models;
 public class Product {
     private String storeId;
     private String userId;
+    private String productId;
     public String code;
     public String name;
     public double price;
@@ -18,6 +19,24 @@ public class Product {
         this.name = name;
         this.price = price;
         this.count = count;
+    }
+
+    public Product(String storeId, String userId, String productId, String code, String name, double price, int count) {
+        this.storeId = storeId;
+        this.userId = userId;
+        this.productId = productId;
+        this.code = code;
+        this.name = name;
+        this.price = price;
+        this.count = count;
+    }
+
+    public String getProductId() {
+        return productId;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public String getStoreId() {

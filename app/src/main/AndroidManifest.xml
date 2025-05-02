@@ -21,6 +21,9 @@
         android:theme="@style/Theme.QR_Inventory_App"
         tools:targetApi="31">
         <activity
+            android:name=".activitys.StoreDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".activitys.AddProductActivity"
             android:exported="false" />
         <activity

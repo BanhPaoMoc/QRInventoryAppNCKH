@@ -10,13 +10,6 @@ public class Store {
     public Store() {
     }
 
-    public Store(String storeId, String storeName, String userId, int totalCount) {
-        this.storeId = storeId;
-        this.storeName = storeName;
-        this.userId = userId;
-        this.totalCount = totalCount;
-    }
-
     // Constructor với tham số
     public Store(String storeId, String storeName, String userId) {
         this.storeId = storeId;
@@ -50,12 +43,7 @@ public class Store {
         this.userId = userId;
     }
 
-    public int getTotalCount() {
-        return totalCount;
-    }
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
-    }
+
     @Override
     public String toString() {
         return storeName; // để hiển thị trong Spinner

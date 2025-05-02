@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:padding="20dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+
+        <!-- Mã sản phẩm -->
+        <EditText
+            android:id="@+id/edtDialogProductCode"
+            android:hint="Mã sản phẩm"
+            android:enabled="false"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Spinner kho -->
+<!--        <Spinner-->
+<!--            android:id="@+id/spinnerDialogStore"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:enabled="false"-->
+<!--            android:clickable="false"-->
+<!--            android:focusable="false"-->
+<!--            android:focusableInTouchMode="false"-->
+<!--            android:alpha="0.5"-->
+<!--            android:layout_marginTop="10dp" />-->
+
+
+        <!-- Tên sản phẩm -->
+        <TextView
+            android:id="@+id/textViewStoreName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Tên kho đã chọn" />
+
+        <EditText
+            android:id="@+id/edtDialogProductName"
+            android:hint="Tên sản phẩm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+        <!-- Giá sản phẩm -->
+        <EditText
+            android:id="@+id/edtDialogProductPrice"
+            android:hint="Giá sản phẩm"
+            android:inputType="numberDecimal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+        <!-- Số lượng -->
+        <EditText
+            android:id="@+id/edtDialogProductCount"
+            android:hint="Số lượng"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp" />
+
+        <!-- Nút chức năng -->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="50px"
+            android:layout_marginBottom="30px"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btnAddProduct"
+                android:text="Thêm sản phẩm"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="15px" />
+
+            <Button
+                android:id="@+id/btnCloseDialog"
+                android:text="Đóng"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="15px" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

@@ -111,7 +111,6 @@ public class StoreFragment extends Fragment {
                             }
                         }
                     }
-                    store.setTotalCount(totalCount);  // Cập nhật tổng số lượng
 
                     storeList.add(store);  // Thêm vào storeList
                 }
@@ -122,8 +121,7 @@ public class StoreFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                // Hiển thị thông báo lỗi nếu Firebase bị lỗi
-                Toast.makeText(getContext(), "Lỗi khi đọc kho hàng", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), "Lỗi khi đọc kho hàng: " + error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
         return view;

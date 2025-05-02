@@ -1,24 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_margin="8dp"
+app:cardCornerRadius="8dp"
+app:cardElevation="4dp">
+
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp"
-    android:background="@android:color/white"
-    android:elevation="4dp">
+    android:padding="16dp">
 
+    <!-- Tên kho -->
     <TextView
         android:id="@+id/tvStoreName"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
         android:text="Tên kho"
-        android:textStyle="bold"
-        android:textSize="16sp"/>
+        android:textColor="@android:color/black"
+        android:textSize="18sp" />
+
+    <!-- Nút xóa -->
+
+    <!-- Nút đổi tên -->
 
     <TextView
         android:id="@+id/tvTotalCount"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Số lượng: 0"
-        android:textSize="14sp"/>
-</LinearLayout>
+        android:layout_below="@+id/tvStoreName"
+        android:layout_alignParentStart="true"
+
+        android:text="Số lượng: 5"
+        android:textSize="14sp" />
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/btnDelete"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--        android:contentDescription="Xóa"-->
+<!--        android:src="@drawable/ic_delete" />-->
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/btnEdit"-->
+<!--        android:layout_width="40dp"-->
+<!--        android:layout_height="40dp"-->
+<!--        android:src="@drawable/ic_edit"-->
+<!--        android:background="?attr/selectableItemBackgroundBorderless"-->
+<!--        android:contentDescription="Đổi tên"-->
+<!--        android:layout_toStartOf="@id/btnDelete"-->
+<!--        android:layout_centerVertical="true"-->
+<!--        android:layout_marginEnd="8dp" />-->
+
+</RelativeLayout>
+
+</androidx.cardview.widget.CardView>
