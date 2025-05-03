@@ -36,7 +36,7 @@ public class AddProductActivity extends AppCompatActivity {
 
     private EditText edtProductCode;
 
-    private Button btnAddProduct;
+    private Button btnChooseStore;
     private Spinner spinnerStores;
     String userId = FirebaseAuth.getInstance().getUid();
 
@@ -47,7 +47,7 @@ public class AddProductActivity extends AppCompatActivity {
         setContentView(R.layout.activity_add_product);
 
         edtProductCode = findViewById(R.id.edtProductCode);
-        btnAddProduct = findViewById(R.id.btnAddProduct);
+        btnChooseStore = findViewById(R.id.btnChooseStore);
 
 
         spinnerStores = findViewById(R.id.spinnerStores);
@@ -74,7 +74,8 @@ public class AddProductActivity extends AppCompatActivity {
                         .child(userId)
                         .child("Stores")
                         .child(storeId)
-                        .child("Products");
+                        .child("Products")
+                        .child(sanitizedCode);
 
                 productRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -128,43 +129,59 @@ public class AddProductActivity extends AppCompatActivity {
         }
 
         // Xử lý nút thêm sản phẩm
-        btnAddProduct.setOnClickListener(v -> {
+        btnChooseStore.setOnClickListener(v -> {
             String code = scannedProductCode;
-
+            if (code == null || code.isEmpty()) {
+                Toast.makeText(AddProductActivity.this,
+                        "Chưa có mã sản phẩm để xử lý",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
 
             Store selectedStore = (Store) spinnerStores.getSelectedItem();
             if (selectedStore == null) {
-                Toast.makeText(this, "Vui lòng chọn kho hàng", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddProductActivity.this,
+                        "Vui lòng chọn kho hàng",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
             String storeId = selectedStore.getStoreId();
             String sanitizedCode = sanitizeProductId(code);
 
+            // Trỏ trực tiếp đến sản phẩm đã quét trong kho
             DatabaseReference productRef = FirebaseDatabase.getInstance()
                     .getReference("Users")
                     .child(userId)
                     .child("Stores")
                     .child(storeId)
-                    .child("Products");
+                    .child("Products")
+                    .child(sanitizedCode);
 
             productRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     if (snapshot.exists()) {
+                        // Lấy thông tin sản phẩm hiện có
                         Product existingProduct = snapshot.getValue(Product.class);
+                        // Mở dialog Nhập/Xuất với thông tin product
                         showEditQuantityDialog(existingProduct, storeId);
+
                     } else {
+                        // Mở dialog thêm sản phẩm mới
                         showAddProductDialog(storeId, sanitizedCode);
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
-                    Toast.makeText(AddProductActivity.this, "Lỗi truy vấn dữ liệu", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddProductActivity.this,
+                            "Lỗi truy vấn dữ liệu: " + error.getMessage(),
+                            Toast.LENGTH_SHORT).show();
                 }
             });
         });
+
 
     }
 
@@ -181,12 +198,23 @@ public class AddProductActivity extends AppCompatActivity {
         builder.setView(view);
 
         TextView txtName = view.findViewById(R.id.txtProductName);
+        TextView txtProductPrice = view.findViewById(R.id.txtProductPrice);
         TextView txtCurrentCount = view.findViewById(R.id.txtCurrentCount);
         EditText edtQuantity = view.findViewById(R.id.edtQuantityInput);
 
-        txtName.setText(product.getName());
+        Button btnNhap = view.findViewById(R.id.btnNhap);
+        Button btnXuat = view.findViewById(R.id.btnXuat);
+
+        txtName.setText("Tên sản phẩm: " + product.getName());
+        txtProductPrice.setText("Giá sản phẩm: " + product.getPrice());
         txtCurrentCount.setText("Tồn kho: " + product.getCount());
 
+        btnNhap.setOnClickListener(v -> {
+            handleUpdateQuantity(edtQuantity, product, storeId, true);
+        });
+        btnXuat.setOnClickListener(v -> {
+            handleUpdateQuantity(edtQuantity, product, storeId, false);
+        });
         builder.setPositiveButton("Nhập", (dialog, which) -> {
             handleUpdateQuantity(edtQuantity, product, storeId, true);
         });
@@ -244,53 +272,62 @@ public class AddProductActivity extends AppCompatActivity {
         View view = LayoutInflater.from(this).inflate(R.layout.dialog_add_product, null);
         builder.setView(view);
 
-        EditText edtProductCode = view.findViewById(R.id.edtDialogProductCode);
-        EditText edtProductName = view.findViewById(R.id.edtDialogProductName);
-        EditText edtProductPrice = view.findViewById(R.id.edtDialogProductPrice);
-        EditText edtProductCount = view.findViewById(R.id.edtDialogProductCount);
+        EditText edtProductCode    = view.findViewById(R.id.edtDialogProductCode);
+        EditText edtProductName    = view.findViewById(R.id.edtDialogProductName);
+        EditText edtProductPrice   = view.findViewById(R.id.edtDialogProductPrice);
+        EditText edtProductCount   = view.findViewById(R.id.edtDialogProductCount);
         TextView textViewStoreName = view.findViewById(R.id.textViewStoreName);
-        Button btnAddProduct = view.findViewById(R.id.btnAddProduct);
-        Button btnCloseDialog = view.findViewById(R.id.btnCloseDialog);
+        Button btnAddProduct       = view.findViewById(R.id.btnAddProduct);
+        Button btnCloseDialog      = view.findViewById(R.id.btnCloseDialog);
 
-        // Gán mã sản phẩm
+        // Gán mã sản phẩm và khóa lại
         edtProductCode.setText(productCode);
         edtProductCode.setEnabled(false);
 
-        // Tạo dialog và hiển thị sớm để có thể cập nhật UI khi dữ liệu tới
         builder.setTitle("Thêm sản phẩm mới");
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        // Lấy tên kho theo storeId
-        DatabaseReference storeRef = FirebaseDatabase.getInstance().getReference("Users")
+        // Lấy thông tin Store
+        DatabaseReference storeRef = FirebaseDatabase.getInstance()
+                .getReference("Users")
                 .child(userId)
-                .child("Stores");
+                .child("Stores")
+                .child(storeId);
 
         storeRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot storeSnapshot : snapshot.getChildren()) {
-                    Store store = storeSnapshot.getValue(Store.class);
-                    if (store != null && store.getStoreId().equals(storeId)) {
-                        textViewStoreName.setText("Kho đã chọn: " + store.getStoreName());
-                        break;
-                    }
+                if (!snapshot.exists()) {
+                    Toast.makeText(AddProductActivity.this,
+                            "Kho không tồn tại hoặc đã bị xóa",
+                            Toast.LENGTH_SHORT).show();
+                    dialog.dismiss();
+                    return;
+                }
+                Store store = snapshot.getValue(Store.class);
+                if (store != null) {
+                    textViewStoreName.setText("Kho đã chọn: " + store.getStoreName());
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(AddProductActivity.this, "Không thể load kho hàng", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddProductActivity.this,
+                        "Không thể load thông tin kho: " + error.getMessage(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
         btnAddProduct.setOnClickListener(v -> {
-            String name = edtProductName.getText().toString().trim();
+            String name     = edtProductName.getText().toString().trim();
             String priceStr = edtProductPrice.getText().toString().trim();
             String countStr = edtProductCount.getText().toString().trim();
 
             if (name.isEmpty() || priceStr.isEmpty() || countStr.isEmpty()) {
-                Toast.makeText(this, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddProductActivity.this,
+                        "Vui lòng nhập đầy đủ thông tin",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -298,7 +335,9 @@ public class AddProductActivity extends AppCompatActivity {
             try {
                 price = Double.parseDouble(priceStr);
             } catch (NumberFormatException e) {
-                Toast.makeText(this, "Giá sản phẩm không hợp lệ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddProductActivity.this,
+                        "Giá sản phẩm không hợp lệ",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -306,7 +345,9 @@ public class AddProductActivity extends AppCompatActivity {
             try {
                 count = Integer.parseInt(countStr);
             } catch (NumberFormatException e) {
-                Toast.makeText(this, "Số lượng sản phẩm không hợp lệ", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddProductActivity.this,
+                        "Số lượng sản phẩm không hợp lệ",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -319,14 +360,22 @@ public class AddProductActivity extends AppCompatActivity {
                     .child(productCode)
                     .setValue(newProduct)
                     .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "Thêm sản phẩm thành công!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AddProductActivity.this,
+                                "Thêm sản phẩm thành công!",
+                                Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     })
-                    .addOnFailureListener(e -> Toast.makeText(this, "Lỗi khi thêm sản phẩm", Toast.LENGTH_SHORT).show());
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(AddProductActivity.this,
+                                "Lỗi khi thêm sản phẩm: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    });
         });
 
         btnCloseDialog.setOnClickListener(v -> dialog.dismiss());
     }
+
+
 
 
 
