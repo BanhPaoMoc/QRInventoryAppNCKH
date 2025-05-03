@@ -1,25 +1,94 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:padding="16dp"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <EditText
-
-        android:id="@+id/edtProductCode"
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="24dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:hint="Mã sản phẩm"/>
+        android:layout_height="wrap_content">
 
+        <!-- Tiêu đề form -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thêm sản phẩm vào kho"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_margin="30dp"
+            android:layout_gravity="center_horizontal"
+            android:paddingBottom="16dp"/>
 
-    <Spinner
-        android:id="@+id/spinnerStores"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"/>
+        <!-- Mã sản phẩm -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mã sản phẩm"
+            app:boxStrokeColor="#018786"
+            app:boxBackgroundMode="outline"
+            android:layout_marginBottom="16dp">
 
-    <Button
-        android:id="@+id/btnChooseStore"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Chọn kho" />
-</LinearLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtProductCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:padding="12dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Chọn kho hàng: "
+            android:textSize="18sp"
+            android:textColor="@color/design_default_color_on_background"
+            android:layout_marginBottom="16dp"/>
+        <!-- Chọn kho -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Chọn kho hàng"
+            app:boxStrokeColor="#018786"
+            app:boxBackgroundMode="outline"
+            android:layout_marginBottom="24dp">
+
+            <Spinner
+                android:id="@+id/spinnerStores"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Nút Chọn và Hủy -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:weightSum="2"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnChooseStore"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Chọn kho"
+                android:layout_marginEnd="8dp"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelAddProduct"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Hủy thêm"
+                android:textColor="@color/design_default_color_error"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

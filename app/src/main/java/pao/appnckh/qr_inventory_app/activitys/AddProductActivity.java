@@ -36,7 +36,7 @@ public class AddProductActivity extends AppCompatActivity {
 
     private EditText edtProductCode;
 
-    private Button btnChooseStore;
+    private Button btnChooseStore, btnCancel;
     private Spinner spinnerStores;
     String userId = FirebaseAuth.getInstance().getUid();
 
@@ -48,7 +48,12 @@ public class AddProductActivity extends AppCompatActivity {
 
         edtProductCode = findViewById(R.id.edtProductCode);
         btnChooseStore = findViewById(R.id.btnChooseStore);
-
+        btnCancel = findViewById(R.id.btnCancelAddProduct);
+        btnCancel.setOnClickListener(v -> {
+            Intent intent = new Intent(AddProductActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        });
 
         spinnerStores = findViewById(R.id.spinnerStores);
         List<Store> storeList = new ArrayList<>();
@@ -165,7 +170,7 @@ public class AddProductActivity extends AppCompatActivity {
                         // Lấy thông tin sản phẩm hiện có
                         Product existingProduct = snapshot.getValue(Product.class);
                         // Mở dialog Nhập/Xuất với thông tin product
-                        showEditQuantityDialog(existingProduct, storeId);
+                        showEditQuantityDialog(existingProduct, storeId, sanitizedCode);
 
                     } else {
                         // Mở dialog thêm sản phẩm mới
@@ -191,44 +196,93 @@ public class AddProductActivity extends AppCompatActivity {
     }
 
 
-    private void showEditQuantityDialog(Product product, String storeId) {
+//    private void showEditQuantityDialog(Product product, String storeId, String sanitizedCode) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//        builder.setTitle("Sản phẩm đã tồn tại");
+//        View view = LayoutInflater.from(this).inflate(R.layout.dialog_edit_quantity, null);
+//        builder.setView(view);
+//
+//        TextView txtName = view.findViewById(R.id.txtProductName);
+//        TextView txtProductPrice = view.findViewById(R.id.txtProductPrice);
+//        TextView txtCurrentCount = view.findViewById(R.id.txtCurrentCount);
+//        EditText edtQuantity = view.findViewById(R.id.edtQuantityInput);
+//
+//        Button btnNhap = view.findViewById(R.id.btnNhap);
+//        Button btnXuat = view.findViewById(R.id.btnXuat);
+//
+//        txtName.setText("Tên sản phẩm: " + product.getName());
+//        txtProductPrice.setText("Giá sản phẩm: " + product.getPrice());
+//        txtCurrentCount.setText("Tồn kho: " + product.getCount());
+//
+//        btnNhap.setOnClickListener(v -> {
+//            handleUpdateQuantity(edtQuantity, product, storeId, true, sanitizedCode);
+//        });
+//        btnXuat.setOnClickListener(v -> {
+//            handleUpdateQuantity(edtQuantity, product, storeId, false, sanitizedCode);
+//        });
+//
+//        builder.setNeutralButton("Đóng", (dialog, which) -> dialog.dismiss());
+//
+//        builder.show();
+//    }
+
+    private void showEditQuantityDialog(
+            Product product,
+            String storeId,
+            String sanitizedCode
+    ) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Sản phẩm đã tồn tại");
-        View view = LayoutInflater.from(this).inflate(R.layout.dialog_edit_quantity, null);
+
+        View view = LayoutInflater.from(this)
+                .inflate(R.layout.dialog_edit_quantity, null);
         builder.setView(view);
 
-        TextView txtName = view.findViewById(R.id.txtProductName);
+        TextView txtName         = view.findViewById(R.id.txtProductName);
         TextView txtProductPrice = view.findViewById(R.id.txtProductPrice);
         TextView txtCurrentCount = view.findViewById(R.id.txtCurrentCount);
-        EditText edtQuantity = view.findViewById(R.id.edtQuantityInput);
+        EditText edtQuantity     = view.findViewById(R.id.edtQuantityInput);
+        Button btnNhap           = view.findViewById(R.id.btnNhap);
+        Button btnXuat           = view.findViewById(R.id.btnXuat);
 
-        Button btnNhap = view.findViewById(R.id.btnNhap);
-        Button btnXuat = view.findViewById(R.id.btnXuat);
-
+        // set ban đầu
         txtName.setText("Tên sản phẩm: " + product.getName());
         txtProductPrice.setText("Giá sản phẩm: " + product.getPrice());
         txtCurrentCount.setText("Tồn kho: " + product.getCount());
 
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
         btnNhap.setOnClickListener(v -> {
-            handleUpdateQuantity(edtQuantity, product, storeId, true);
+            handleUpdateQuantity(
+                    edtQuantity,
+                    product,
+                    storeId,
+                    true,
+                    sanitizedCode,
+                    txtCurrentCount  // truyền vào đây
+            );
         });
         btnXuat.setOnClickListener(v -> {
-            handleUpdateQuantity(edtQuantity, product, storeId, false);
+            handleUpdateQuantity(
+                    edtQuantity,
+                    product,
+                    storeId,
+                    false,
+                    sanitizedCode,
+                    txtCurrentCount  // truyền vào đây
+            );
         });
-        builder.setPositiveButton("Nhập", (dialog, which) -> {
-            handleUpdateQuantity(edtQuantity, product, storeId, true);
-        });
-
-        builder.setNegativeButton("Xuất", (dialog, which) -> {
-            handleUpdateQuantity(edtQuantity, product, storeId, false);
-        });
-
-        builder.setNeutralButton("Đóng", (dialog, which) -> dialog.dismiss());
-
-        builder.show();
     }
 
-    private void handleUpdateQuantity(EditText edtQuantity, Product product, String storeId, boolean isImport) {
+    private void handleUpdateQuantity(
+            EditText edtQuantity,
+            Product product,
+            String storeId,
+            boolean isImport,
+            String sanitizedCode,
+            TextView txtCurrentCount // thêm tham số này
+    ) {
         String quantityStr = edtQuantity.getText().toString().trim();
         if (quantityStr.isEmpty()) {
             Toast.makeText(this, "Vui lòng nhập số lượng", Toast.LENGTH_SHORT).show();
@@ -244,26 +298,39 @@ public class AddProductActivity extends AppCompatActivity {
             return;
         }
 
-        int newCount = isImport ? product.getCount() + quantity : product.getCount() - quantity;
+        int newCount = isImport
+                ? product.getCount() + quantity
+                : product.getCount() - quantity;
         if (newCount < 0) {
             Toast.makeText(this, "Không đủ hàng để xuất", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // cập nhật model
         product.setCount(newCount);
 
+        // ghi vào Firebase
         FirebaseDatabase.getInstance().getReference("Users")
                 .child(userId)
                 .child("Stores")
                 .child(storeId)
                 .child("Products")
-                .child(product.getProductId())
+                .child(sanitizedCode)
                 .setValue(product)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, (isImport ? "Nhập" : "Xuất") + " thành công!", Toast.LENGTH_SHORT).show();
+                    // 1. Toast thông báo
+                    Toast.makeText(this,
+                            (isImport ? "Nhập" : "Xuất") + " thành công!",
+                            Toast.LENGTH_SHORT).show();
+                    // 2. Cập nhật ngay TextView
+                    txtCurrentCount.setText("Tồn kho: " + product.getCount());
+                    // 3. Clear input để dễ thao tác tiếp
+                    edtQuantity.setText("");
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Lỗi khi cập nhật sản phẩm", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this,
+                            "Lỗi khi cập nhật sản phẩm: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
                 });
     }
 
