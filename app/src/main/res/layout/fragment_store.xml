@@ -20,11 +20,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:background="@drawable/outline_button"
+        android:backgroundTint="@color/orange"
         android:src="@drawable/ic_add"
         android:contentDescription="Thêm kho" />
 
-    <!-- RecyclerView để hiển thị danh sách kho -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvStores"
         android:layout_width="match_parent"

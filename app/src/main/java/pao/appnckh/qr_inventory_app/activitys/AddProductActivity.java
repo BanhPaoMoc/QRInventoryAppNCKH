@@ -26,11 +26,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import pao.appnckh.qr_inventory_app.R;
 import pao.appnckh.qr_inventory_app.models.Product;
 import pao.appnckh.qr_inventory_app.models.Store;
+import pao.appnckh.qr_inventory_app.models.TransactionHistory;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -94,7 +97,7 @@ public class AddProductActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        // Không cần thiết xử lý nếu chỉ dùng để thông báo
+
                     }
                 });
             }
@@ -196,36 +199,6 @@ public class AddProductActivity extends AppCompatActivity {
     }
 
 
-//    private void showEditQuantityDialog(Product product, String storeId, String sanitizedCode) {
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle("Sản phẩm đã tồn tại");
-//        View view = LayoutInflater.from(this).inflate(R.layout.dialog_edit_quantity, null);
-//        builder.setView(view);
-//
-//        TextView txtName = view.findViewById(R.id.txtProductName);
-//        TextView txtProductPrice = view.findViewById(R.id.txtProductPrice);
-//        TextView txtCurrentCount = view.findViewById(R.id.txtCurrentCount);
-//        EditText edtQuantity = view.findViewById(R.id.edtQuantityInput);
-//
-//        Button btnNhap = view.findViewById(R.id.btnNhap);
-//        Button btnXuat = view.findViewById(R.id.btnXuat);
-//
-//        txtName.setText("Tên sản phẩm: " + product.getName());
-//        txtProductPrice.setText("Giá sản phẩm: " + product.getPrice());
-//        txtCurrentCount.setText("Tồn kho: " + product.getCount());
-//
-//        btnNhap.setOnClickListener(v -> {
-//            handleUpdateQuantity(edtQuantity, product, storeId, true, sanitizedCode);
-//        });
-//        btnXuat.setOnClickListener(v -> {
-//            handleUpdateQuantity(edtQuantity, product, storeId, false, sanitizedCode);
-//        });
-//
-//        builder.setNeutralButton("Đóng", (dialog, which) -> dialog.dismiss());
-//
-//        builder.show();
-//    }
-
     private void showEditQuantityDialog(
             Product product,
             String storeId,
@@ -298,14 +271,47 @@ public class AddProductActivity extends AppCompatActivity {
             return;
         }
 
-        int newCount = isImport
-                ? product.getCount() + quantity
-                : product.getCount() - quantity;
+        int newCount = isImport ? product.getCount() + quantity : product.getCount() - quantity;
         if (newCount < 0) {
             Toast.makeText(this, "Không đủ hàng để xuất", Toast.LENGTH_SHORT).show();
             return;
         }
+        // Create transaction history record
+        String transactionId = FirebaseDatabase.getInstance().getReference().push().getKey();
+        TransactionHistory transaction = new TransactionHistory(
+                transactionId,
+                product.getProductId(),
+                product.getName(),
+                storeId,
+                ((Store) spinnerStores.getSelectedItem()).getStoreName(),
+                System.currentTimeMillis(),
+                quantity,
+                isImport,
+                newCount
+        );
 
+        // Update both product count and save transaction history
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId);
+
+        Map<String, Object> updates = new HashMap<>();
+        // Update product count
+        updates.put("Stores/" + storeId + "/Products/" + sanitizedCode + "/count", newCount);
+        // Save transaction history
+        updates.put("TransactionHistory/" + transactionId, transaction);
+
+        userRef.updateChildren(updates)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this,
+                            (isImport ? "Nhập" : "Xuất") + " thành công!",
+                            Toast.LENGTH_SHORT).show();
+                    txtCurrentCount.setText("Tồn kho: " + newCount);
+                    edtQuantity.setText("");
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this,
+                            "Lỗi khi cập nhật: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show();
+                });
         // cập nhật model
         product.setCount(newCount);
 
@@ -318,13 +324,13 @@ public class AddProductActivity extends AppCompatActivity {
                 .child(sanitizedCode)
                 .setValue(product)
                 .addOnSuccessListener(aVoid -> {
-                    // 1. Toast thông báo
+
                     Toast.makeText(this,
                             (isImport ? "Nhập" : "Xuất") + " thành công!",
                             Toast.LENGTH_SHORT).show();
-                    // 2. Cập nhật ngay TextView
+
                     txtCurrentCount.setText("Tồn kho: " + product.getCount());
-                    // 3. Clear input để dễ thao tác tiếp
+
                     edtQuantity.setText("");
                 })
                 .addOnFailureListener(e -> {

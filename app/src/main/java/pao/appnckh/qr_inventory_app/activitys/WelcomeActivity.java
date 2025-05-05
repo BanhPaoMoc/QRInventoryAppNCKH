@@ -28,7 +28,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9001;
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    private ImageView btnGoogleLogin;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +36,6 @@ public class WelcomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_welcome);
 
         mAuth = FirebaseAuth.getInstance();
-        btnGoogleLogin = findViewById(R.id.btnGoogleLoginWelcome);
         Button btnLogin = findViewById(R.id.btnLogin);
         Button btnRegister = findViewById(R.id.btnRegister);
 
@@ -50,7 +49,6 @@ public class WelcomeActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         // Xử lý Google Sign-In
-        btnGoogleLogin.setOnClickListener(view -> signInWithGoogle());
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override

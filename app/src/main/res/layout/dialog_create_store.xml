@@ -25,7 +25,7 @@
             android:id="@+id/btnCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/blackbutton"
+            android:backgroundTint="@color/black"
             android:textColor="@color/white"
             android:text="Hủy"
             android:layout_marginEnd="8dp" />
@@ -34,7 +34,7 @@
             android:id="@+id/btnCreate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/custom_button"
+            android:backgroundTint="@color/orange"
             android:textColor="@color/white"
             android:text="Tạo kho" />
     </LinearLayout>

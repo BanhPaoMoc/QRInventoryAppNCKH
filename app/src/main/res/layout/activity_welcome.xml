@@ -34,8 +34,8 @@
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="LOG IN"
-            android:background="@drawable/custom_button"
+            android:text="ĐĂNG NHẬP"
+            android:backgroundTint="@color/orange"
             android:textColor="@android:color/white"
             android:textStyle="bold"
 
@@ -49,9 +49,9 @@
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="REGISTER"
-            android:background="@drawable/outline_button"
-            android:textColor="#2196F3"
+            android:text="ĐĂNG KÝ"
+            android:backgroundTint="@color/black"
+            android:textColor="@android:color/white"
             android:textStyle="bold"
             android:gravity="center"
             android:paddingStart="16dp"
@@ -64,17 +64,6 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginTop="10dp"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/btnGoogleLoginWelcome"
-            android:layout_width="105dp"
-            android:layout_height="56dp"
-            android:layout_margin="10dp"
-            android:background="@drawable/edt"
-            android:paddingTop="9dp"
-            android:paddingBottom="8dp"
-            android:src="@drawable/gg_ic" />
-    </LinearLayout>
+        android:gravity="center"/>
 </LinearLayout>
 

@@ -9,86 +9,111 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
-
-        <!-- Mã sản phẩm -->
+        <TextView
+            android:id="@+id/textViewStoreCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:text="Mã sản phẩm:"
+            android:textSize="18sp" />
         <EditText
             android:id="@+id/edtDialogProductCode"
-            android:hint="Mã sản phẩm"
-            android:enabled="false"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="51dp"
+            android:background="@drawable/edt"
+            android:enabled="false"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:hint="Mã sản phẩm"
+            android:paddingStart="20dp" />
 
-        <!-- Spinner kho -->
-<!--        <Spinner-->
-<!--            android:id="@+id/spinnerDialogStore"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:enabled="false"-->
-<!--            android:clickable="false"-->
-<!--            android:focusable="false"-->
-<!--            android:focusableInTouchMode="false"-->
-<!--            android:alpha="0.5"-->
-<!--            android:layout_marginTop="10dp" />-->
-
-
-        <!-- Tên sản phẩm -->
         <TextView
             android:id="@+id/textViewStoreName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Tên kho đã chọn" />
-
-        <EditText
-            android:id="@+id/edtDialogProductName"
-            android:hint="Tên sản phẩm"
+            android:paddingStart="4dp"
+            android:text="Kho đã chọn:"
+            android:textSize="18sp" />
+        <TextView
+            android:id="@+id/textViewItemName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="10dp"
+            android:paddingStart="4dp"
+            android:text="Tên sản phẩm:"
+            android:textSize="18sp" />
+        <EditText
+            android:id="@+id/edtDialogProductName"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:layout_marginTop="10dp"
+            android:paddingStart="20dp"
+            android:background="@drawable/edt"
+            android:hint="Tên sản phẩm" />
 
-        <!-- Giá sản phẩm -->
+        <TextView
+            android:id="@+id/textViewItemValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingStart="4dp"
+            android:text="Giá sản phẩm:"
+            android:textSize="18sp" />
         <EditText
             android:id="@+id/edtDialogProductPrice"
             android:hint="Giá sản phẩm"
             android:inputType="numberDecimal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="51dp"
+            android:paddingStart="20dp"
+            android:background="@drawable/edt"
             android:layout_marginTop="10dp" />
 
-        <!-- Số lượng -->
+        <TextView
+            android:id="@+id/textViewItemQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingStart="4dp"
+            android:text="Số lượng:"
+            android:textSize="18sp" />
         <EditText
             android:id="@+id/edtDialogProductCount"
             android:hint="Số lượng"
             android:inputType="number"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="51dp"
+            android:paddingStart="20dp"
+            android:background="@drawable/edt"
             android:layout_marginTop="10dp" />
 
         <!-- Nút chức năng -->
         <LinearLayout
-            android:orientation="horizontal"
-            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginTop="50px"
             android:layout_marginBottom="30px"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Button
                 android:id="@+id/btnAddProduct"
-                android:text="Thêm sản phẩm"
-                android:layout_width="0dp"
+                android:layout_width="72dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="15px"
                 android:layout_weight="1"
-                android:layout_marginEnd="15px" />
+                android:backgroundTint="@color/orange"
+                android:text="Thêm sản phẩm" />
 
             <Button
                 android:id="@+id/btnCloseDialog"
-                android:text="Đóng"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="15px"
                 android:layout_weight="1"
-                android:layout_marginStart="15px" />
+                android:backgroundTint="@color/black"
+                android:text="Đóng" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

@@ -16,32 +16,34 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Thêm sản phẩm vào kho"
+            android:textColor="@color/black"
             android:textSize="20sp"
             android:textStyle="bold"
             android:layout_margin="30dp"
             android:layout_gravity="center_horizontal"
             android:paddingBottom="16dp"/>
-
-        <!-- Mã sản phẩm -->
-        <com.google.android.material.textfield.TextInputLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="Mã sản phẩm: "
+            android:textSize="18sp"
+            android:textColor="@color/design_default_color_on_background"
+            android:layout_marginBottom="16dp"/>
+        <!-- Mã sản phẩm -->
+        <EditText
+            android:id="@+id/edtProductCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_edittext"
             android:hint="Mã sản phẩm"
-            app:boxStrokeColor="#018786"
-            app:boxBackgroundMode="outline"
-            android:layout_marginBottom="16dp">
+            android:padding="20dp"
+            android:textColor="@color/black" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtProductCode"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:padding="12dp"/>
-        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:text="Chọn kho hàng: "
             android:textSize="18sp"
             android:textColor="@color/design_default_color_on_background"
@@ -59,7 +61,10 @@
                 android:id="@+id/spinnerStores"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="8dp"/>
+                android:background="@drawable/edt"
+                android:textColor="@color/black"
+                android:padding="20dp"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Nút Chọn và Hủy -->
@@ -73,21 +78,23 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnChooseStore"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="8dp"
                 android:layout_weight="1"
-                android:text="Chọn kho"
-                android:layout_marginEnd="8dp"/>
+                android:textColor="@color/orange"
+                android:backgroundTint="@color/white"
+                android:text="Thêm" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCancelAddProduct"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Hủy thêm"
-                android:textColor="@color/design_default_color_error"/>
+                android:backgroundTint="@color/orange"
+                android:text="Hủy"
+                android:textColor="@color/white" />
         </LinearLayout>
 
     </LinearLayout>

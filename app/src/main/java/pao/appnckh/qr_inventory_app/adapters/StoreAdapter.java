@@ -73,8 +73,6 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
             }
         });
 
-
-
         // Xử lý sự kiện xóa
         holder.btnDelete.setOnClickListener(v -> {
             if (onStoreActionListener != null) {

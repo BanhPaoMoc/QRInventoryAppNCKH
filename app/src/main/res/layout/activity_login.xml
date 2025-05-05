@@ -92,7 +92,7 @@
             android:layout_height="50dp"
             android:text="Đăng Nhập"
             android:textColor="@android:color/white"
-            android:background="@drawable/blackbutton"
+            android:backgroundTint="@color/black"
             android:layout_marginTop="20dp"/>
 
         <!-- Hoặc Login với -->

@@ -9,7 +9,7 @@
 
         <TextView
             android:id="@+id/txtProductName"
-            android:text="Tên sản phẩm"
+            android:text="Tên sản phẩm:"
             android:textStyle="bold"
             android:textColor="#000000"
             android:layout_marginBottom="8dp"
@@ -19,7 +19,7 @@
 
         <TextView
             android:id="@+id/txtProductPrice"
-            android:text="Giá sản phẩm"
+            android:text="Giá sản phẩm:"
             android:textStyle="bold"
             android:textColor="#000000"
             android:layout_marginBottom="8dp"
@@ -39,7 +39,7 @@
 
         <TextView
             android:id="@+id/txtCurrentCount"
-            android:text="Số lượng Tồn kho: "
+            android:text="Số lượng Sản Phẩm: "
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
             android:layout_width="match_parent"
@@ -50,7 +50,7 @@
             android:id="@+id/edtQuantityInput"
             android:hint="Nhập số lượng nhập / xuất"
             android:inputType="number"
-            android:background="@drawable/rounded_edittext"
+            android:background="@drawable/edt"
             android:padding="12dp"
             android:layout_marginBottom="20dp"
             android:layout_width="match_parent"
@@ -68,7 +68,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:backgroundTint="#4CAF50"
+                    android:backgroundTint="@color/orange"
                     android:textColor="#FFFFFF"
                     android:text="Nhập"
                     android:layout_marginEnd="8dp" />
@@ -78,8 +78,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:backgroundTint="#F44336"
-                    android:textColor="#FFFFFF"
+                    android:backgroundTint="@color/white"
+                    android:textColor="@color/black"
                     android:text="Xuất" />
         </LinearLayout>
 
