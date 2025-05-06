@@ -5,18 +5,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pao.appnckh.qr_inventory_app.R;
+import pao.appnckh.qr_inventory_app.adapters.AttendanceAdapter;
 import pao.appnckh.qr_inventory_app.helpers.AttendanceHelper;
+import pao.appnckh.qr_inventory_app.models.AttendanceRecord;
 
 public class HomeFragment extends Fragment {
 
@@ -25,9 +33,15 @@ public class HomeFragment extends Fragment {
     private TextView tvCheckOutTime;
     private Button btnCheckIn;
     private Button btnCheckOut;
+    private RecyclerView rvAttendanceHistory;
+    private ProgressBar progressHistory;
+    private TextView tvHistoryTitle;
+    private TextView tvNoHistory;
 
     private AttendanceHelper attendanceHelper;
     private FirebaseUser currentUser;
+    private AttendanceAdapter attendanceAdapter;
+    private List<AttendanceRecord> attendanceRecords;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -56,8 +70,17 @@ public class HomeFragment extends Fragment {
         // Hiển thị ngày hiện tại
         tvCurrentDate.setText("Ngày: " + AttendanceHelper.getCurrentDate());
 
+        // Khởi tạo danh sách và adapter
+        attendanceRecords = new ArrayList<>();
+        attendanceAdapter = new AttendanceAdapter(attendanceRecords);
+        rvAttendanceHistory.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvAttendanceHistory.setAdapter(attendanceAdapter);
+
         // Kiểm tra trạng thái chấm công hiện tại
         loadAttendanceStatus();
+
+        // Tải lịch sử chấm công
+        loadAttendanceHistory();
 
         // Thiết lập listener cho các nút
         setupButtonListeners();
@@ -69,6 +92,12 @@ public class HomeFragment extends Fragment {
         tvCheckOutTime = view.findViewById(R.id.tvCheckOutTime);
         btnCheckIn = view.findViewById(R.id.btnCheckIn);
         btnCheckOut = view.findViewById(R.id.btnCheckOut);
+
+        // Khởi tạo các view mới cho lịch sử chấm công
+        rvAttendanceHistory = view.findViewById(R.id.rvAttendanceHistory);
+        progressHistory = view.findViewById(R.id.progressHistory);
+        tvHistoryTitle = view.findViewById(R.id.tvHistoryTitle);
+        tvNoHistory = view.findViewById(R.id.tvNoHistory);
     }
 
     private void loadAttendanceStatus() {
@@ -79,6 +108,44 @@ public class HomeFragment extends Fragment {
             public void onStatusLoaded(String status, String checkInTime, String checkOutTime) {
                 // Cập nhật UI dựa trên trạng thái
                 updateUIBasedOnStatus(status, checkInTime, checkOutTime);
+            }
+        });
+    }
+
+    private void loadAttendanceHistory() {
+        // Hiển thị loading
+        progressHistory.setVisibility(View.VISIBLE);
+        rvAttendanceHistory.setVisibility(View.GONE);
+        tvNoHistory.setVisibility(View.GONE);
+
+        // Lấy lịch sử chấm công của tháng hiện tại
+        attendanceHelper.getCurrentMonthAttendance(new AttendanceHelper.AttendanceHistoryCallback() {
+            @Override
+            public void onHistoryLoaded(List<AttendanceRecord> records) {
+                // Ẩn loading
+                progressHistory.setVisibility(View.GONE);
+
+                // Cập nhật dữ liệu vào adapter
+                if (records != null && !records.isEmpty()) {
+                    attendanceRecords.clear();
+                    attendanceRecords.addAll(records);
+                    attendanceAdapter.notifyDataSetChanged();
+                    rvAttendanceHistory.setVisibility(View.VISIBLE);
+                    tvNoHistory.setVisibility(View.GONE);
+                } else {
+                    rvAttendanceHistory.setVisibility(View.GONE);
+                    tvNoHistory.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                // Ẩn loading, hiển thị lỗi
+                progressHistory.setVisibility(View.GONE);
+                rvAttendanceHistory.setVisibility(View.GONE);
+                tvNoHistory.setVisibility(View.VISIBLE);
+                tvNoHistory.setText("Lỗi: " + error);
+                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -146,6 +213,8 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
                 // Tải lại trạng thái sau khi check in
                 loadAttendanceStatus();
+                // Cập nhật lịch sử chấm công
+                loadAttendanceHistory();
             }
 
             @Override
@@ -168,6 +237,8 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show();
                 // Tải lại trạng thái sau khi check out
                 loadAttendanceStatus();
+                // Cập nhật lịch sử chấm công
+                loadAttendanceHistory();
             }
 
             @Override
@@ -182,5 +253,7 @@ public class HomeFragment extends Fragment {
         super.onResume();
         // Tải lại trạng thái khi quay lại fragment
         loadAttendanceStatus();
+        // Cập nhật lịch sử chấm công
+        loadAttendanceHistory();
     }
 }

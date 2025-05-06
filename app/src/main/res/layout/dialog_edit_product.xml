@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:padding="20dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textViewStoreCode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"
+            android:text="Mã sản phẩm:"
+            android:textSize="18sp" />
+        <EditText
+            android:id="@+id/etProductCode"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:background="@drawable/edt"
+            android:enabled="false"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:hint="Mã sản phẩm"
+            android:paddingStart="20dp" />
+
+        <TextView
+            android:id="@+id/textViewStoreName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingStart="4dp"
+            android:text="Kho đã chọn:"
+            android:textSize="18sp" />
+        <TextView
+            android:id="@+id/textViewItemName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingStart="4dp"
+            android:text="Tên sản phẩm:"
+            android:textSize="18sp" />
+        <EditText
+            android:id="@+id/etProductName"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:layout_marginTop="10dp"
+            android:paddingStart="20dp"
+            android:background="@drawable/edt"
+            android:hint="Tên sản phẩm" />
+
+        <TextView
+            android:id="@+id/textViewItemValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingStart="4dp"
+            android:text="Giá sản phẩm:"
+            android:textSize="18sp" />
+        <EditText
+            android:id="@+id/etProductPrice"
+            android:hint="Giá sản phẩm"
+            android:inputType="numberDecimal"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:paddingStart="20dp"
+            android:background="@drawable/edt"
+            android:layout_marginTop="10dp" />
+
+        <TextView
+            android:id="@+id/textViewItemQuantity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:paddingStart="4dp"
+            android:text="Số lượng:"
+            android:textSize="18sp" />
+        <EditText
+            android:id="@+id/etProductQuantity"
+            android:hint="Số lượng"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="51dp"
+            android:paddingStart="20dp"
+            android:background="@drawable/edt"
+            android:layout_marginTop="10dp" />
+
+        <!-- Nút chức năng -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50px"
+            android:layout_marginBottom="30px"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnSave"
+                android:layout_width="72dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15px"
+                android:layout_weight="1"
+                android:backgroundTint="@color/orange"
+                android:text="Lưu" />
+
+            <Button
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15px"
+                android:layout_weight="1"
+                android:backgroundTint="@color/black"
+                android:text="Hủy" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

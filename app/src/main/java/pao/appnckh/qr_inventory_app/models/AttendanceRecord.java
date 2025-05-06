@@ -11,6 +11,7 @@ public class AttendanceRecord {
     private long checkInTimestamp;
     private long checkOutTimestamp;
     private String status;  // "checked_in", "checked_out", "absent"
+    private String recordId; // Added recordId field
 
     // Constructor cần thiết cho Firebase
     public AttendanceRecord() {
@@ -103,5 +104,14 @@ public class AttendanceRecord {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    // Added getter and setter for recordId
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
     }
 }

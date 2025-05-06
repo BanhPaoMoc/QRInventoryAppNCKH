@@ -13,11 +13,16 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import pao.appnckh.qr_inventory_app.models.AttendanceRecord;
@@ -40,6 +45,11 @@ public class AttendanceHelper {
 
     public interface AttendanceStatusCallback {
         void onStatusLoaded(String status, String checkInTime, String checkOutTime);
+    }
+
+    public interface AttendanceHistoryCallback {
+        void onHistoryLoaded(List<AttendanceRecord> records);
+        void onError(String error);
     }
 
     public AttendanceHelper(Context context) {
@@ -164,6 +174,67 @@ public class AttendanceHelper {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 callback.onError("Lỗi khi truy cập database: " + error.getMessage());
+            }
+        });
+    }
+
+    // Lấy lịch sử chấm công trong tháng hiện tại
+    public void getCurrentMonthAttendance(AttendanceHistoryCallback callback) {
+        if (currentUser == null) {
+            callback.onError("Bạn chưa đăng nhập!");
+            return;
+        }
+
+        // Lấy thông tin tháng hiện tại
+        Calendar calendar = Calendar.getInstance();
+        int currentMonth = calendar.get(Calendar.MONTH); // 0-11
+        int currentYear = calendar.get(Calendar.YEAR);
+
+        // Ngày đầu tiên của tháng
+        calendar.set(currentYear, currentMonth, 1, 0, 0, 0);
+        long startOfMonth = calendar.getTimeInMillis();
+
+        // Ngày cuối cùng của tháng
+        calendar.set(currentYear, currentMonth + 1, 0, 23, 59, 59);
+        long endOfMonth = calendar.getTimeInMillis();
+
+        // Query để lấy dữ liệu chấm công trong tháng hiện tại của người dùng hiện tại
+        Query query = mDatabase.child("attendance")
+                .orderByChild("userId").equalTo(currentUser.getUid());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<AttendanceRecord> records = new ArrayList<>();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    AttendanceRecord record = snapshot.getValue(AttendanceRecord.class);
+                    if (record != null) {
+                        // Thêm recordId vào đối tượng
+                        record.setRecordId(snapshot.getKey());
+
+                        // Kiểm tra xem bản ghi có thuộc tháng hiện tại không
+                        if (record.getCheckInTimestamp() >= startOfMonth &&
+                                record.getCheckInTimestamp() <= endOfMonth) {
+                            records.add(record);
+                        }
+                    }
+                }
+
+                // Sắp xếp theo thời gian giảm dần (mới nhất lên đầu)
+                Collections.sort(records, new Comparator<AttendanceRecord>() {
+                    @Override
+                    public int compare(AttendanceRecord o1, AttendanceRecord o2) {
+                        return Long.compare(o2.getCheckInTimestamp(), o1.getCheckInTimestamp());
+                    }
+                });
+
+                callback.onHistoryLoaded(records);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                callback.onError("Lỗi khi tải lịch sử chấm công: " + databaseError.getMessage());
             }
         });
     }
