@@ -67,63 +67,20 @@ public class StoreFragment extends Fragment {
         String userId = firebaseAuth.getCurrentUser().getUid();
         userStoresReference = FirebaseDatabase.getInstance().getReference("Users").child(userId).child("Stores");
 
-        // Khởi tạo danh sách kho và adapter
+        // Khởi tạo danh sách và adapter
         storeList = new ArrayList<>();
         filteredStoreList = new ArrayList<>();
         setupRecyclerView();
 
-        // Load danh sách kho từ Firebase
+        // Load stores
         loadStores();
 
-        // Xử lý sự kiện thêm kho
+        // Thêm kho
         fabAddStore.setOnClickListener(v -> showCreateStoreDialog());
 
-        // Xử lý sự kiện tìm kiếm
+        // Tìm kiếm
         setupSearchView();
 
-        DatabaseReference storesRef = FirebaseDatabase.getInstance().getReference("Stores");
-        storesRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            private DataSnapshot snapshot;
-
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                this.snapshot = snapshot;
-
-                // Khởi tạo list kho hàng nếu chưa có
-                storeList.clear(); // Đảm bảo rằng list trước khi thêm mới phải clear
-
-                // Duyệt qua từng store trong Firebase
-                for (DataSnapshot storeSnap : snapshot.getChildren()) {
-                    String storeId = storeSnap.getKey();
-                    String storeName = storeSnap.child("storeName").getValue(String.class);
-
-                    // Khởi tạo đối tượng StoreModel
-                    Store store = new Store();
-                    store.setStoreId(storeId);
-                    store.setStoreName(storeName);
-
-                    int totalCount = 0;
-                    for (DataSnapshot productSnap : storeSnap.getChildren()) {
-                        if (productSnap.hasChild("count")) {
-                            Integer count = productSnap.child("count").getValue(Integer.class);
-                            if (count != null) {
-                                totalCount += count;
-                            }
-                        }
-                    }
-
-                    storeList.add(store);  // Thêm vào storeList
-                }
-
-                // Sau khi lấy xong dữ liệu từ Firebase, cập nhật RecyclerView
-                updateRecyclerView();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-//                Toast.makeText(getContext(), "Lỗi khi đọc kho hàng: " + error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
         return view;
     }
 
@@ -222,16 +179,20 @@ public class StoreFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 storeList.clear();
+                filteredStoreList.clear();
+
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                     Store store = dataSnapshot.getValue(Store.class);
                     if (store != null) {
+                        // Ensure storeId is set
+                        store.setStoreId(dataSnapshot.getKey());
                         storeList.add(store);
+                        filteredStoreList.add(store);
                     }
                 }
-                // Cập nhật danh sách đã lọc
-                filteredStoreList.clear();
-                filteredStoreList.addAll(storeList);
+
                 storeAdapter.notifyDataSetChanged();
+                Log.d("StoreFragment", "Loaded " + storeList.size() + " stores");
             }
 
             @Override
@@ -240,7 +201,6 @@ public class StoreFragment extends Fragment {
             }
         });
     }
-
     // Hiển thị hộp thoại tạo kho
     private void showCreateStoreDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -287,7 +247,19 @@ public class StoreFragment extends Fragment {
 
     // Xóa kho
     private void deleteStore(Store store) {
-        // Lấy danh sách các sản phẩm trong kho
+        new AlertDialog.Builder(getContext())
+                .setTitle("Xác nhận xóa")
+                .setMessage("Bạn có chắc chắn muốn xóa kho \"" + store.getStoreName() + "\" không?")
+                .setPositiveButton("Xóa", (dialog, which) -> {
+                    // Thực hiện xóa kho sau khi xác nhận
+                    performDeleteStore(store);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    // Tách logic xóa kho thành method riêng
+    private void performDeleteStore(Store store) {
         DatabaseReference productsRef = FirebaseDatabase.getInstance().getReference("Stores")
                 .child(store.getStoreId());
 
@@ -295,15 +267,12 @@ public class StoreFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // Nếu kho còn sản phẩm, xóa tất cả các sản phẩm
                     for (DataSnapshot productSnap : dataSnapshot.getChildren()) {
-                        // Xóa từng sản phẩm
                         productSnap.getRef().removeValue();
                     }
                     Toast.makeText(getContext(), "Đã xóa hết sản phẩm trong kho", Toast.LENGTH_SHORT).show();
                 }
 
-                // Sau khi xóa hết sản phẩm, xóa kho
                 userStoresReference.child(store.getStoreId()).removeValue()
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
@@ -320,7 +289,6 @@ public class StoreFragment extends Fragment {
             }
         });
     }
-
 
     // Hiển thị hộp thoại đổi tên kho
     private void showEditStoreDialog(Store store) {
