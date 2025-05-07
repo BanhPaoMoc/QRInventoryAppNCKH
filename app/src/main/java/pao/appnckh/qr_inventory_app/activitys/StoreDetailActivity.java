@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,13 +46,16 @@ public class StoreDetailActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerViewProducts);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        productList = new ArrayList<>();
-        productAdapter = new ProductAdapter(productList);
-        recyclerView.setAdapter(productAdapter);
-
         // Nhận dữ liệu từ Intent
         storeId = getIntent().getStringExtra("storeId");
         userId = getIntent().getStringExtra("userId");
+
+
+        productList = new ArrayList<>();
+        productAdapter = new ProductAdapter( this, productList, storeId, userId);
+        recyclerView.setAdapter(productAdapter);
+
+
 
         if (storeId == null || userId == null) {
             Toast.makeText(this, "Thiếu dữ liệu kho!", Toast.LENGTH_SHORT).show();

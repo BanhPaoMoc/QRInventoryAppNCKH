@@ -98,7 +98,7 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/btnSave"
+                android:id="@+id/btnEditSave"
                 android:layout_width="72dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="15px"
@@ -107,7 +107,7 @@
                 android:text="Lưu" />
 
             <Button
-                android:id="@+id/btnCancel"
+                android:id="@+id/btnEditCancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="15px"
