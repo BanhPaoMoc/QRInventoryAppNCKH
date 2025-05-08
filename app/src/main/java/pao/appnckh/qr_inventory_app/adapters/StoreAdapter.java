@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +31,7 @@ import pao.appnckh.qr_inventory_app.models.Store;
 public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHolder> {
 
     private Context context;
-    private List<Store> storeList ;
+    private List<Store> storeList;
     private OnStoreActionListener onStoreActionListener;
 
     public StoreAdapter(Context context, List<Store> storeList, OnStoreActionListener onStoreActionListener) {
@@ -90,7 +90,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, StoreDetailActivity.class);
             intent.putExtra("storeId", store.getStoreId());
-            intent.putExtra("userId", store.getUserId()); // bắt buộc phải có userId
+            intent.putExtra("userId", store.getUserId());
             context.startActivity(intent);
         });
     }
@@ -102,7 +102,7 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
 
     public static class StoreViewHolder extends RecyclerView.ViewHolder {
         TextView tvStoreName, totalCountTextView;
-        ImageButton btnDelete, btnEdit;
+        ImageView btnDelete, btnEdit;
 
         public StoreViewHolder(@NonNull View itemView, OnStoreActionListener onStoreActionListener) {
             super(itemView);
@@ -110,15 +110,12 @@ public class StoreAdapter extends RecyclerView.Adapter<StoreAdapter.StoreViewHol
             btnDelete = itemView.findViewById(R.id.btnDelete);
             btnEdit = itemView.findViewById(R.id.btnEdit);
             totalCountTextView = itemView.findViewById(R.id.totalCountTextView);
-
         }
     }
 
     public interface OnStoreActionListener {
         void onStoreClicked(Store store);
         void onEditStore(Store store, int position);
-        void onDeleteStore(Store store, int position);  // Phương thức cần implement
+        void onDeleteStore(Store store, int position);
     }
-
-
 }

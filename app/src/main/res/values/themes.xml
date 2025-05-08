@@ -1,7 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.QR_Inventory_App" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="colorPrimary">@color/orange</item>
+        <item name="colorPrimaryDark">@color/orange</item>
+        <item name="colorAccent">@color/orange</item>
+        <item name="android:colorBackground">@color/white</item>
     </style>
 
-    <style name="Theme.QR_Inventory_App" parent="Theme.MaterialComponents.Light.NoActionBar"/>
+    <style name="Theme.QR_Inventory_App" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@color/white</item>
+        <item name="colorPrimary">@color/orange</item>
+        <item name="colorPrimaryDark">@color/orange</item>
+        <item name="colorAccent">@color/orange</item>
+        <item name="android:colorBackground">@color/white</item>
+    </style>
 </resources>

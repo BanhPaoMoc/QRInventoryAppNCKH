@@ -36,19 +36,21 @@
             android:text="Số lượng: 5"
             android:textSize="14sp" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btnDelete"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:padding="5dp"
             android:layout_alignParentEnd="true"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Xóa"
             android:src="@drawable/ic_delete" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/btnEdit"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:padding="5dp"
             android:src="@drawable/ic_edit"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Đổi tên"

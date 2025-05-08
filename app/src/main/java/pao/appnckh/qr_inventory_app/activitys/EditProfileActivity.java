@@ -10,13 +10,17 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import pao.appnckh.qr_inventory_app.R;
+import pao.appnckh.qr_inventory_app.models.Users;
 
 public class EditProfileActivity extends AppCompatActivity {
-    private TextInputEditText edtName, edtPhone;
+    private TextInputEditText edtName;
     private Button btnSave;
     private FirebaseAuth mAuth;
+    private DatabaseReference userRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,14 +30,16 @@ public class EditProfileActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
+        if (user != null) {
+            userRef = FirebaseDatabase.getInstance().getReference("Users").child(user.getUid());
+        }
+
         edtName = findViewById(R.id.edtName);
-        edtPhone = findViewById(R.id.edtPhone);
         btnSave = findViewById(R.id.btnSave);
 
         // Load current user data
         if (user != null) {
             edtName.setText(user.getDisplayName());
-            edtPhone.setText(user.getPhoneNumber());
         }
 
         btnSave.setOnClickListener(v -> updateProfile());
@@ -41,7 +47,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
     private void updateProfile() {
         String name = edtName.getText().toString().trim();
-        String phone = edtPhone.getText().toString().trim();
 
         if (name.isEmpty()) {
             edtName.setError("Vui lòng nhập họ tên");
@@ -50,6 +55,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
         FirebaseUser user = mAuth.getCurrentUser();
         if (user != null) {
+            // Update Firebase Auth profile
             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                     .setDisplayName(name)
                     .build();
@@ -57,10 +63,22 @@ public class EditProfileActivity extends AppCompatActivity {
             user.updateProfile(profileUpdates)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
-                            finish();
+                            // Update Realtime Database
+                            Users userData = new Users();
+                            userData.setFullName(name);
+                            userData.setEmail(user.getEmail());
+                            userData.setUid(user.getUid());
+
+                            userRef.setValue(userData)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(this, "Cập nhật thông tin thành công", Toast.LENGTH_SHORT).show();
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(this, "Lỗi khi cập nhật thông tin: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    });
                         } else {
-                            Toast.makeText(this, "Cập nhật thông tin thất bại", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Cập nhật thông tin thất bại: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }

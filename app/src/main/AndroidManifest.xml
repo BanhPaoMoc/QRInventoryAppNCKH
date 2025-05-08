@@ -60,6 +60,7 @@
         <activity
             android:name=".activitys.QRScanActivity"
             android:exported="false" />
+        <activity android:name=".activitys.GuideActivity" />
     </application>
 
 </manifest>

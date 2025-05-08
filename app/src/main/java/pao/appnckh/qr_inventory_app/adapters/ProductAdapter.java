@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +39,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
         TextView nameText, quantityText, textProductPrice, textProductBarCode, textProductId;
-        ImageButton btnDeleteProduct, btnEditProduct;
+        ImageView btnDeleteProduct, btnEditProduct;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,19 +69,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         holder.quantityText.setText("Số lượng: " + product.getCount());
         holder.textProductBarCode.setText("Mã vạch: " + product.getCode());
         holder.textProductId.setText("Mã sản phẩm: " + product.getProductId());
-        holder.btnEditProduct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                editProduct(position);
-            }
-        });
-
-        holder.btnDeleteProduct.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                deleteProduct(position, context);
-            }
-        });
+        holder.btnEditProduct.setOnClickListener(v -> editProduct(position));
+        holder.btnDeleteProduct.setOnClickListener(v -> deleteProduct(position, context));
     }
 
     private void deleteProduct(int position, Context context) {
@@ -90,42 +79,35 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         new AlertDialog.Builder(context)
                 .setTitle("Xác nhận xoá")
                 .setMessage("Bạn có chắc chắn muốn xoá sản phẩm \"" + product.getName() + "\"?")
-                .setPositiveButton("Xoá", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // 1. Kiểm tra productId không null
-                        String pid = product.getProductId();
-                        if (pid == null) {
-                            Toast.makeText(context, "Lỗi: productId không tồn tại", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        // 2. Xóa trên Firebase
-                        DatabaseReference ref = FirebaseDatabase.getInstance()
-                                .getReference("Users")
-                                .child(userId)        // đảm bảo userId đã được gán trong Adapter
-                                .child("Stores")
-                                .child(storeId)       // đảm bảo storeId đã được gán trong Adapter
-                                .child("Products")
-                                .child(pid);
-
-                        ref.removeValue()
-                                .addOnSuccessListener(aVoid -> {
-                                    // 3. Xóa thành công, cập nhật UI
-                                    productList.remove(position);
-                                    notifyItemRemoved(position);
-                                    notifyItemRangeChanged(position, productList.size());
-                                    Toast.makeText(context, "Đã xoá sản phẩm", Toast.LENGTH_SHORT).show();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(context, "Lỗi xoá Firebase: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                });
+                .setPositiveButton("Xoá", (dialog, which) -> {
+                    String pid = product.getProductId();
+                    if (pid == null) {
+                        Toast.makeText(context, "Lỗi: productId không tồn tại", Toast.LENGTH_SHORT).show();
+                        return;
                     }
+
+                    DatabaseReference ref = FirebaseDatabase.getInstance()
+                            .getReference("Users")
+                            .child(userId)
+                            .child("Stores")
+                            .child(storeId)
+                            .child("Products")
+                            .child(pid);
+
+                    ref.removeValue()
+                            .addOnSuccessListener(aVoid -> {
+                                productList.remove(position);
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position, productList.size());
+                                Toast.makeText(context, "Đã xoá sản phẩm", Toast.LENGTH_SHORT).show();
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(context, "Lỗi xoá sản phẩm: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                 })
-                .setNegativeButton("Huỷ", null)
+                .setNegativeButton("Hủy", null)
                 .show();
     }
-
 
     private void editProduct(int position) {
         Product product = productList.get(position);
@@ -148,57 +130,46 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
         AlertDialog dialog = new AlertDialog.Builder(context)
                 .setView(view)
-                .setCancelable(false) // không đóng dialog khi bấm ra ngoài
+                .setCancelable(false)
                 .create();
 
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String name = etProductName.getText().toString();
-                double price = Double.parseDouble(etProductPrice.getText().toString());
-                int count = Integer.parseInt(etProductQuantity.getText().toString());
-                String code = etProductCode.getText().toString();
+        btnSave.setOnClickListener(v -> {
+            String name = etProductName.getText().toString();
+            double price = Double.parseDouble(etProductPrice.getText().toString());
+            int count = Integer.parseInt(etProductQuantity.getText().toString());
+            String code = etProductCode.getText().toString();
 
-                product.setName(name);
-                product.setPrice(price);
-                product.setCount(count);
-                product.setCode(code);
+            product.setName(name);
+            product.setPrice(price);
+            product.setCount(count);
+            product.setCode(code);
 
-                notifyItemChanged(position);
+            notifyItemChanged(position);
 
-                // Cập nhật lên Firebase
-                DatabaseReference productRef = FirebaseDatabase.getInstance()
-                        .getReference("Users")
-                        .child(userId)
-                        .child("Stores")
-                        .child(storeId)
-                        .child("Products")
-                        .child(product.getProductId());
+            DatabaseReference productRef = FirebaseDatabase.getInstance()
+                    .getReference("Users")
+                    .child(userId)
+                    .child("Stores")
+                    .child(storeId)
+                    .child("Products")
+                    .child(product.getProductId());
 
-                productRef.setValue(product)
-                        .addOnSuccessListener(aVoid -> {
-                            notifyItemChanged(position);
-                            Toast.makeText(context, "Đã cập nhật sản phẩm", Toast.LENGTH_SHORT).show();
-                            dialog.dismiss();
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(context, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        });
-                dialog.dismiss();
-            }
+            productRef.setValue(product)
+                    .addOnSuccessListener(aVoid -> {
+                        notifyItemChanged(position);
+                        Toast.makeText(context, "Đã cập nhật sản phẩm", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "Lỗi cập nhật: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+            dialog.dismiss();
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }
-
-
 
     @Override
     public int getItemCount() {
