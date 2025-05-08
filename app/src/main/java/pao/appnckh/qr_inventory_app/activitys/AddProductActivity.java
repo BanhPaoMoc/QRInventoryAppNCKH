@@ -425,13 +425,29 @@ public class AddProductActivity extends AppCompatActivity {
             }
 
             Product newProduct = new Product(storeId, productCode, name, price, count);
+
+            // Tạo transaction history cho việc thêm sản phẩm mới
+            String transactionId = FirebaseDatabase.getInstance().getReference().push().getKey();
+            TransactionHistory transaction = new TransactionHistory(
+                    transactionId,
+                    productCode,
+                    name,
+                    storeId,
+                    ((Store) spinnerStores.getSelectedItem()).getStoreName(),
+                    System.currentTimeMillis(),
+                    count,
+                    true, // true vì đây là nhập hàng mới
+                    count
+            );
+
+            // Cập nhật cả sản phẩm và lịch sử giao dịch
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("Stores/" + storeId + "/Products/" + productCode, newProduct);
+            updates.put("TransactionHistory/" + transactionId, transaction);
+
             FirebaseDatabase.getInstance().getReference("Users")
                     .child(userId)
-                    .child("Stores")
-                    .child(storeId)
-                    .child("Products")
-                    .child(productCode)
-                    .setValue(newProduct)
+                    .updateChildren(updates)
                     .addOnSuccessListener(aVoid -> {
                         Toast.makeText(AddProductActivity.this,
                                 "Thêm sản phẩm thành công!",

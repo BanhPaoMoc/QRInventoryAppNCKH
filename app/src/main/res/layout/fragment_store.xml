@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:queryHint="Tìm kiếm kho..."
+        android:background="@drawable/edt"
         android:iconifiedByDefault="false" />
 
     <!-- Nút thêm kho -->

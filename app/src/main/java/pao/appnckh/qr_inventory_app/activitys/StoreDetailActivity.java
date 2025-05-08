@@ -7,6 +7,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -31,8 +32,10 @@ public class StoreDetailActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private List<Product> productList;
+    private List<Product> filteredList;
     private ProductAdapter productAdapter;
     private DatabaseReference productRef;
+    private SearchView searchView;
 
     private String userId, storeId;
 
@@ -44,18 +47,17 @@ public class StoreDetailActivity extends AppCompatActivity {
 
         TextView textStoreTitle = findViewById(R.id.textStoreTitle);
         recyclerView = findViewById(R.id.recyclerViewProducts);
+        searchView = findViewById(R.id.searchView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // Nhận dữ liệu từ Intent
         storeId = getIntent().getStringExtra("storeId");
         userId = getIntent().getStringExtra("userId");
 
-
         productList = new ArrayList<>();
-        productAdapter = new ProductAdapter( this, productList, storeId, userId);
+        filteredList = new ArrayList<>();
+        productAdapter = new ProductAdapter(this, filteredList, storeId, userId);
         recyclerView.setAdapter(productAdapter);
-
-
 
         if (storeId == null || userId == null) {
             Toast.makeText(this, "Thiếu dữ liệu kho!", Toast.LENGTH_SHORT).show();
@@ -71,7 +73,40 @@ public class StoreDetailActivity extends AppCompatActivity {
 
         textStoreTitle.setText("Sản phẩm trong kho");
 
+        setupSearchView();
         loadProducts();
+    }
+
+    private void setupSearchView() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filterProducts(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterProducts(newText);
+                return true;
+            }
+        });
+    }
+
+    private void filterProducts(String query) {
+        filteredList.clear();
+        if (query.isEmpty()) {
+            filteredList.addAll(productList);
+        } else {
+            String searchQuery = query.toLowerCase();
+            for (Product product : productList) {
+                if (product.getName().toLowerCase().contains(searchQuery) ||
+                        product.getCode().toLowerCase().contains(searchQuery)) {
+                    filteredList.add(product);
+                }
+            }
+        }
+        productAdapter.notifyDataSetChanged();
     }
 
     private void loadProducts() {
@@ -79,11 +114,13 @@ public class StoreDetailActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 productList.clear();
+                filteredList.clear();
                 for (DataSnapshot data : snapshot.getChildren()) {
                     Product product = data.getValue(Product.class);
                     if (product != null) {
-                        product.setProductId(data.getKey()); // Gán ID nếu cần
+                        product.setProductId(data.getKey());
                         productList.add(product);
+                        filteredList.add(product);
                     }
                 }
                 productAdapter.notifyDataSetChanged();
@@ -95,5 +132,4 @@ public class StoreDetailActivity extends AppCompatActivity {
             }
         });
     }
-
 }
