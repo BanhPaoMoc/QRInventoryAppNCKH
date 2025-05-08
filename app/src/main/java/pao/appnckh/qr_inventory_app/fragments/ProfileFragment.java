@@ -158,7 +158,7 @@ public class ProfileFragment extends Fragment {
         });
 
         layoutChinhSachBaoMat.setOnClickListener(v -> {
-            String url = "https://your-privacy-policy-url.com"; // Thay thế bằng URL thực tế
+            String url = "https://github.com/BanhPaoMoc/QRInventoryAppNCKH/blob/main/%C4%90i%E1%BB%81u%20Kho%E1%BA%A3n%20V%C3%A0%20Ch%C3%ADnh%20S%C3%A1ch.md";
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             startActivity(intent);
         });
@@ -170,7 +170,7 @@ public class ProfileFragment extends Fragment {
 
         layoutLienHe.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setData(Uri.parse("mailto:support@yourapp.com")); // Thay thế bằng email thực tế
+            intent.setData(Uri.parse("mailto:qrinventoryappnckh@gmail.com"));
             intent.putExtra(Intent.EXTRA_SUBJECT, "Liên hệ hỗ trợ");
             startActivity(intent);
         });
@@ -186,7 +186,7 @@ public class ProfileFragment extends Fragment {
         builder.setMessage("Bạn có muốn gửi phản hồi về ứng dụng không?");
         builder.setPositiveButton("Gửi phản hồi", (dialog, which) -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setData(Uri.parse("mailto:feedback@yourapp.com")); // Thay thế bằng email thực tế
+            intent.setData(Uri.parse("mailto:qrinventoryappnckh@gmail.com")); // Thay thế bằng email thực tế
             intent.putExtra(Intent.EXTRA_SUBJECT, "Phản hồi người dùng");
             startActivity(intent);
         });
